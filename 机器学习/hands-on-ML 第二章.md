@@ -32,12 +32,14 @@
               "total_rooms",
               "housing_median_age"]
             scatter_matrix(housing[attributes], figsize=(12, 8))
-         ```
+             ```
 - 组合特征    
 4. 准备数据以更好地将基础数据模式提供给机器学习算法
 - 注意编写函数以方便服用，同时数据集需要copy
-    > housing = strat_train_set.drop("median_house_value", axis=1)
-    > housing_labels = strat_train_set["median_house_value"].copy()
+    ```Python
+    housing = strat_train_set.drop("median_house_value", axis=1)
+    housing_labels = strat_train_set["median_house_value"].copy()
+    ```
 - 数据清洗
     - .dropna(subset=["..."]) 删除相应区域
     - .drop() 删除整个属性
@@ -49,6 +51,8 @@
     - from sklearn.preprocessing import OneHotEncoder
     - from sklearn.preprocessing import LabelBinarizer
         - 同样需要fit_transform(), 注意，返回的是array
+- 特征缩放
+    - from sklearn.preprocessing import StandardScaler
 5. 探索不同的模型并列出最优模型
 6. 微调模型并将它们组合成一个很好的解决方案
 7. 展示您的解决方案
@@ -58,4 +62,64 @@
 ```Python   
 housing_tr = pd.DataFrame(X, columns=housing_num.columns,
                           index = list(housing.index.values))
+```
+
+# 定制转换器
+虽然Scikit-Learn提供了许多有用的transformers，但我们需要编写我们自己的transformer来执行诸如自定义清理操作或特定组合属性等任务。 我们希望自定义的transformers与Scikit-Learn的功能（例如管道）无缝协作，并且由于Scikit-Learn依赖于duck typing（不是继承），所以你需要的只是创建一个类并实现三个函数：
+* fit（）返回self（）
+* transform（）
+* fit_transform（）
+
+最后一个只需要添加**TransformerMixin**作为基类即可实现。 此外，如果将**BaseEstimator**添加为基类（并避免构造函数中的* args和** kargs），我们可以获得两个额外的方法（get_params（）和set_params（）），这些方法对自动调整超参数很有用。 例如，这是一个小型transformer类，它添加了我们前面讨论过的组合属性：
+
+```Python
+from sklearn.base import BaseEstimator, TransformerMixin
+
+# column index-列索引
+rooms_ix, bedrooms_ix, population_ix, household_ix = 3, 4, 5, 6
+
+class CombinedAttributesAdder(BaseEstimator, TransformerMixin):
+    def __init__(self, add_bedrooms_per_room = True): # no *args or **kargs
+        self.add_bedrooms_per_room = add_bedrooms_per_room
+    def fit(self, X, y=None):
+        return self  # nothing else to do
+    def transform(self, X, y=None):
+        rooms_per_household = X[:, rooms_ix] / X[:, household_ix]
+        population_per_household = X[:, population_ix] / X[:, household_ix]
+        if self.add_bedrooms_per_room:
+            bedrooms_per_room = X[:, bedrooms_ix] / X[:, rooms_ix]
+            return np.c_[X, rooms_per_household, population_per_household,
+                         bedrooms_per_room]
+        else:
+            return np.c_[X, rooms_per_household, population_per_household]
+
+attr_adder = CombinedAttributesAdder(add_bedrooms_per_room=False)
+housing_extra_attribs = attr_adder.transform(housing.values)
+```
+
+# Pipeline
+```Python
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+
+num_pipeline = Pipeline([
+        ('imputer', Imputer(strategy="median")),
+        ('attribs_adder', CombinedAttributesAdder()),
+        ('std_scaler', StandardScaler()),
+    ])
+
+housing_num_tr = num_pipeline.fit_transform(housing_num)
+```
+
+```Python
+from sklearn.compose import ColumnTransformer
+num_attribs = list(housing_num)
+cat_attribs = ["ocean_proximity"]
+
+full_pipeline = ColumnTransformer([
+        ("num", num_pipeline, num_attribs),
+        ("cat", OneHotEncoder(), cat_attribs),
+    ])
+
+housing_prepared = full_pipeline.fit_transform(housing)
 ```
