@@ -51,8 +51,13 @@ using ClientNameToZip = std::map<std::string, long>  //注意C++鼓励使用usin
 3. using std::string
 
 # [为什么要有静态成员函数？](https://blog.csdn.net/qq_37375427/article/details/78808900)
-静态成员函数为所有对象共有，可以直接通过类名、对象名访问，没有this指针？
+静态成员函数为所有对象共有，可以直接通过类名、对象名访问，没有this指针
 注意的时，静态成员函数只能访问静态变量。
 
 # [capacity 和 size的区别](https://bbs.csdn.net/topics/390343778)
 size是真实大小，capacity是预申请的内存。
+
+# vector的emplace_back和push_back
+emplace_back优势主要在传递类或者结构体之类会比较高效（C++11）
+
+# [左值和右值](https://github.com/imhuay/Algorithm_Interview_Notes-Chinese/blob/master/C-%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/Cpp-C-%E5%B7%A6%E5%80%BC%E4%B8%8E%E5%8F%B3%E5%80%BC.md#move-%E4%B8%8E-forward)
