@@ -1,4 +1,4 @@
-# 机器学习八个步骤
+## 机器学习八个步骤
 1. 问题框架化，视野宏观化
 2. 获取数据
 - pd.read_csv() 返回DataFrame
@@ -58,13 +58,13 @@
 7. 展示您的解决方案
 8. 运行，监控和维护您的系统 
 
-# array 转换成 dataframe
+## array 转换成 dataframe
 ```Python   
 housing_tr = pd.DataFrame(X, columns=housing_num.columns,
                           index = list(housing.index.values))
 ```
 
-# 定制转换器
+## 定制转换器
 虽然Scikit-Learn提供了许多有用的transformers，但我们需要编写我们自己的transformer来执行诸如自定义清理操作或特定组合属性等任务。 我们希望自定义的transformers与Scikit-Learn的功能（例如管道）无缝协作，并且由于Scikit-Learn依赖于duck typing（不是继承），所以你需要的只是创建一个类并实现三个函数：
 * fit（）返回self（）
 * transform（）
@@ -97,7 +97,7 @@ attr_adder = CombinedAttributesAdder(add_bedrooms_per_room=False)
 housing_extra_attribs = attr_adder.transform(housing.values)
 ```
 
-# Pipeline
+## Pipeline
 ```Python
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
@@ -122,4 +122,66 @@ full_pipeline = ColumnTransformer([
     ])
 
 housing_prepared = full_pipeline.fit_transform(housing)
+```
+## 交叉验证
+一个很好的选择是使用Scikit-Learn的**交叉验证**功能。 以下代码执行**K-fold**交叉验证：它将训练集随机分成10个不同的子集称为**folds**，然后它训练和评估决策树模型10次，每次选择不同的**fold**进行评估，在另外9个**folds**上进行训练。结果是一个包含10个评估分数的数组
+```Python
+from sklearn.model_selection import cross_val_score
+
+scores = cross_val_score(tree_reg, housing_prepared, housing_labels,
+                         scoring="neg_mean_squared_error", cv=10)
+
+tree_rmse_scores = np.sqrt(-scores)
+
+```
+
+# Grid Search
+```Python
+from sklearn.model_selection import GridSearchCV
+
+param_grid = [
+    # try 12 (3×4) combinations of hyperparameters
+    {'n_estimators': [3, 10, 30], 'max_features': [2, 4, 6, 8]},
+    # then try 6 (2×3) combinations with bootstrap set as False
+    {'bootstrap': [False], 'n_estimators': [3, 10], 'max_features': [2, 3, 4]},
+  ]
+
+forest_reg = RandomForestRegressor(random_state=42)
+# train across 5 folds, that's a total of (12+6)*5=90 rounds of training 
+grid_search = GridSearchCV(forest_reg, 
+                           param_grid, 
+                           cv=5,
+                           scoring='neg_mean_squared_error', 
+                           return_train_score=True)
+
+grid_search.fit(housing_prepared, housing_labels)
+
+grid_search.best_params_
+grid_search.best_estimator_
+
+cvres = grid_search.cv_results_
+for mean_score, params in zip(cvres["mean_test_score"], cvres["params"]):
+    print(np.sqrt(-mean_score), params)
+
+pd.DataFrame(grid_search.cv_results_)
+```
+
+# Randomized Search
+```Python
+from sklearn.model_selection import RandomizedSearchCV
+from scipy.stats import randint
+
+param_distribs = {
+        'n_estimators': randint(low=1, high=200),
+        'max_features': randint(low=1, high=8),
+    }
+
+forest_reg = RandomForestRegressor(random_state=42)
+rnd_search = RandomizedSearchCV(forest_reg, param_distributions=param_distribs,
+                                n_iter=10, cv=5, scoring='neg_mean_squared_error', random_state=42)
+rnd_search.fit(housing_prepared, housing_labels)
+
+cvres = rnd_search.cv_results_
+for mean_score, params in zip(cvres["mean_test_score"], cvres["params"]):
+    print(np.sqrt(-mean_score), params)
 ```
