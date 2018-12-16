@@ -74,3 +74,20 @@ emplace_back优势主要在传递类或者结构体之类会比较高效（C++11
 4、文字常量区 —常量字符串就是放在这里的。 程序结束后由系统释放。
 
 5、程序代码区—存放函数体的二进制代码。
+
+
+## 文件流
+istrem 基类
+ostrem 基类
+ifsteram 读
+ofstream 写
+fstream 读写
+文件类型分为两种：文本文件和二进制文件
+
+stringstream是字符串流。它将流与存储在内存中的string对象绑定[起来](http://www.cnblogs.com/propheteia/archive/2012/07/12/2588225.html)。
+stringstream无法直接用不同的分隔符（如“，”），使用[getline函数](https://stackoverflow.com/questions/49708987/stringstream-delimeter)
+
+
+## new int(10) 和 new int[10]
+new int(10)表示创建了一个int指针，并初始化它的实例的值为10。
+new int[10]表示创建一个10个大小的int指针数组。
