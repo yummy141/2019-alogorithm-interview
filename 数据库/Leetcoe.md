@@ -1,4 +1,4 @@
-** 组合两个表 **
+## 组合两个表 
 sql之left join、right join、inner join的区别
 left join(左联接) 返回包括左表中的所有记录和右表中联结字段相等的记录 
 right join(右联接) 返回包括右表中的所有记录和左表中联结字段相等的记录
