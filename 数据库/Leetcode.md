@@ -32,3 +32,9 @@ END
 ## sql语句是否区分大小写
 一、在windows系统中不区分大小写
 二、在Linux和Unix系统中字段名、数据库名和表名要区分大小写
+
+
+## 分数排名
+```sql
+select Score, (select count(distinct score) from Scores where score >= s.Score) as Rank from Scores s order by Score desc; 
+```
