@@ -15,7 +15,14 @@ my_batch_norm_layer = partial(tf.layers.batch_normalization,
 hidden1 = tf.layers.dense(X, n_hidden1, name="hidden1")
 bn1 = my_batch_norm_layer(hidden1)
 ```
+## Python reduce()函数
+```Python
+from functools import reduce # Python3
+reduce(function, iterable[, initializer]) #function 有两个参数
 
+fac = lambda n:reduce(lambda x,y:x*y,range(1,n+1)) # 连乘
+add = reduce(lambda x, y: x+y, [1,2,3,4,5]) # 连加
+```
 ## 如何得到一个对象的方法
 dir(对象) 
 
