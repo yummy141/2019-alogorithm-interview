@@ -15,3 +15,22 @@ my_batch_norm_layer = partial(tf.layers.batch_normalization,
 hidden1 = tf.layers.dense(X, n_hidden1, name="hidden1")
 bn1 = my_batch_norm_layer(hidden1)
 ```
+
+## 如何得到一个对象的方法
+dir(对象) 
+
+
+## Python库
+- codecs 
+```Python
+# 相比自带的open函数 读取写入进行自我转码
+ with codecs.open(FLAGS.input_file, encoding='utf-8') as f: 
+        text = f.read()
+```
+
+- easydict 
+可以用属性做字典
+```Python
+__C = edict()
+__C.seed = 0
+```
