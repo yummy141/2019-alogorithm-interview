@@ -26,6 +26,11 @@ add = reduce(lambda x, y: x+y, [1,2,3,4,5]) # 连加
 ## 如何得到一个对象的方法
 dir(对象) 
 
+## 巧用range，划分任务
+```Python
+        jobs = range(n_strucs)
+        jobs = [jobs[_i::COMM.size] for _i in range(COMM.size)] 
+```
 
 ## Python库
 - codecs 
@@ -41,3 +46,4 @@ dir(对象)
 __C = edict()
 __C.seed = 0
 ```
+

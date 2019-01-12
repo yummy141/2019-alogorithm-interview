@@ -91,3 +91,19 @@ stringstream无法直接用不同的分隔符（如“，”），使用[getline
 ## new int(10) 和 new int[10]
 new int(10)表示创建了一个int指针，并初始化它的实例的值为10。
 new int[10]表示创建一个10个大小的int指针数组。
+
+
+## c++ 11 lambda表达式
+[capture list] (params list) -> return type {function body}
+[capture list] (params list) {function body}
+[capture list] {function body}
+``` c++ 
+auto x = [](int a){cout << a << endl;}{123};
+auto f = [x]{cout << x << endl;};x=321;f();
+
+a=123
+auto f=[=]{cout<< a << endl;}f();
+
+auto x = [a]()mutable {cout << ++a << endl;};  //加入mutable可改动外部变量
+
+```
