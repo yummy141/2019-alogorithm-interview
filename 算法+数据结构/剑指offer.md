@@ -1,3 +1,17 @@
+目录
+---
+<!-- TOC -->
+
+- [数组中重复的数字](#数组中重复的数字)
+- [二维数组中的查找](#二维数组中的查找)
+- [从尾到头打印链表](#从尾到头打印链表)
+- [重建二叉树](#重建二叉树)
+- [二叉树的下一个节点](#二叉树的下一个节点)
+- [用两个栈实现队列](#用两个栈实现队列)
+- [跳台阶](#跳台阶)
+- [跳台阶II](#跳台阶ii)
+
+<!-- /TOC -->
 ## 数组中重复的数字
 [**题目描述**](https://www.nowcoder.com/practice/623a5ac0ea5b4e5f95552655361ae0a8?tpId=13&tqId=11203&tPage=3&rp=3&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
 ```
@@ -64,11 +78,12 @@ public:
 };
 ```
 
-## [从尾到头打印链表](https://www.nowcoder.com/practice/d0267f7f55b3412ba93bd35cfa8e8035?tpId=13&tqId=11156&tPage=1&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
+## 从尾到头打印链表
+[链接](https://www.nowcoder.com/practice/d0267f7f55b3412ba93bd35cfa8e8035?tpId=13&tqId=11156&tPage=1&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
 
 **思路**
 - 栈
-    - 或者直接用动态数组插入，然后返回
+    - 或者直接用动态数组插入，然后返回(头插法)
 ```c++
 /**
 *  struct ListNode {
@@ -89,6 +104,201 @@ public:
             p = p->next;
         }
         return ret;
+    }
+};
+```
+
+## 重建二叉树
+>[Nowcoder](https://www.nowcoder.com/practice/8a19cbe657394eeaac2f6ea9b0f6fcf6?tpId=13&tqId=11157&tPage=1&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
+**示例**
+```
+前序
+  1,2,4,7,3,5,6,8
+中序
+  4,7,2,1,5,3,8,6
+
+第一层
+  根节点 1
+  根据根节点的值（不重复），划分中序：
+    {4,7,2} 和 {5,3,8,6}
+  根据左右子树的长度，划分前序：
+    {2,4,7} 和 {3,5,6,8}
+  从而得到左右子树的前序和中序
+    左子树的前序和中序：{2,4,7}、{4,7,2}
+    右子树的前序和中序：{3,5,6,8}、{5,3,8,6}
+
+第二层
+  左子树的根节点 2
+  右子树的根节点 3
+  ...
+```
+
+- 这个方法比较浪费空间，传数组引用会更好
+```c++
+/**
+ * Definition for binary tree
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode* reConstructBinaryTree(vector<int> pre,vector<int> vin) {
+        if(pre.size() <= 0)
+            return NULL;
+        
+        TreeNode* t = new TreeNode{ pre[0] };
+        for(int i = 0; i < pre.size(); i++){
+            if(vin[i] == pre[0]){
+                t->left = reConstructBinaryTree(vector<int>(pre.begin() + 1, pre.begin() + 1 + i), vector<int>(vin.begin(), vin.begin() + i));
+                t->right = reConstructBinaryTree(vector<int>(pre.begin() + 1 + i, pre.end()), vector<int>(vin.begin() + 1 + i, vin.end()));
+            }
+        }
+        return t;
+    }
+};
+```
+
+## 二叉树的下一个节点
+> [Nowcoder](https://www.nowcoder.com/practice/9023a0c988684a53960365b889ceaf5e?tpId=13&tqId=11210&tPage=3&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
+
+**描述**  
+```
+给定一个二叉树和其中的一个结点，请找出中序遍历顺序的下一个结点并且返回。注意，树中的结点不仅包含左右子结点，同时包含指向父结点的指针。
+```
+
+**思路**
+- 如果一个节点的右子树不为空，那么下一个节点是该节点右子树的最左叶子；
+- 否则（右子树为空），沿父节点向上直到找到某个节点是其父节点的左孩子，那么该父节点就是下一个节点
+
+**解释**
+- 当前节点为遍历到的节点，如果它是叶节点（既没有左子树也没有右子树）
+    - 且如果是父节点的左节点
+        - 则其父节点为下一个遍历节点
+    - 且如果是父节点的右节点
+        - 则递归找到第一个是有左节点的节点
+- 如果不是叶节点
+    - 根据左根右原则，当前节点左子树部分（如果有）及自身已经遍历完，则考虑其右子树
+        - 如果有右子树，则按照左根右原则去找右子树中的最左节点
+        - 如果没有右子树
+            - 则可当成叶节点处理
+```c++
+/*
+struct TreeLinkNode {
+    int val;
+    struct TreeLinkNode *left;
+    struct TreeLinkNode *right;
+    struct TreeLinkNode *next;
+    TreeLinkNode(int x) :val(x), left(NULL), right(NULL), next(NULL) {
+        
+    }
+};
+*/
+class Solution {
+public:
+    TreeLinkNode* GetNext(TreeLinkNode* pNode){
+        if(pNode == NULL)
+            return NULL;
+        
+        if(pNode->right != NULL){
+            auto p = pNode->right;
+            while(p->left){
+                p = p->left;
+            }
+            return p;
+        }
+        else{
+            auto p = pNode;
+            while(p->next != NULL){
+                if(p->next->left == p)
+                    return p->next;
+                p = p->next;
+            }
+        }
+        return NULL;
+    }
+};
+```
+
+## 用两个栈实现队列
+> [Nowcoder](https://www.nowcoder.com/practice/54275ddae22f475981afa2244dd448c6?tpId=13&tqId=11158&tPage=1&rp=3&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
+
+**描述**
+```
+用两个栈来实现一个队列，完成队列的Push和Pop操作。 队列中的元素为int类型。
+```
+
+**解释**
+- 注意出队列，要把输出栈中的元素全部输出后才到第一个栈中找元素
+```c++
+class Solution
+{
+public:
+    void push(int node) {
+        stack1.push(node);
+    }
+
+    int pop() {
+        if(stack2.size() == 0){
+            while(stack1.size() > 0){
+                auto t = stack1.top();
+                stack1.pop();
+                stack2.push(t);
+            }
+        }
+        auto t = stack2.top();
+        stack2.pop();
+        return t;
+    }
+
+private:
+    stack<int> stack1;
+    stack<int> stack2;
+};
+```
+
+## 跳台阶
+>[Nowcoder](https://www.nowcoder.com/practice/8c82a5b80378478f9484d87d1c5f12a4?tpId=13&tqId=11161&tPage=1&rp=3&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
+
+**描述**
+```
+一只青蛙一次可以跳上1级台阶，也可以跳上2级。求该青蛙跳上一个n级的台阶总共有多少种跳法（先后次序不同算不同的结果）。
+```
+```c++
+class Solution {
+public:
+    int jumpFloor(int number) {
+        //斐波那契数列
+        int f1 = 1;
+        int f2 = 2;
+        number--;
+        while(number--){
+            f2 = f1 + f2;
+            f1 = f2 - f1;
+        }
+        return f1;
+    }
+};
+```
+
+## 跳台阶II
+
+**描述**
+```
+一只青蛙一次可以跳上1级台阶，也可以跳上2级……它也可以跳上n级。求该青蛙跳上一个n级的台阶总共有多少种跳法。
+```
+```c++
+class Solution {
+public:
+    int jumpFloorII(int number) {
+        vector<int> dp(number+1, 1);
+        for(int i = 1; i <= number; i++)
+            for(int j = 1; j < i ; j++)
+                dp[i] += dp[j];
+        return dp[number];
     }
 };
 ```
