@@ -12,6 +12,7 @@
 - [跳台阶II](#跳台阶ii)
 - [矩形覆盖](#矩形覆盖)
 - [旋转数组的最小数字](#旋转数组的最小数字)
+- [矩阵中的路径](#矩阵中的路径)
 
 <!-- /TOC -->
 ## 数组中重复的数字
@@ -376,6 +377,54 @@ public:
         }
         
         return 0;
+    }
+};
+```
+
+## 矩阵中的路径
+
+**描述**
+```
+请设计一个函数，用来判断在一个矩阵中是否存在一条包含某字符串所有字符的路径。路径可以从矩阵中的任意一个格子开始，每一步可以在矩阵中向左，向右，向上，向下移动一个格子。如果一条路径经过了矩阵中的某一个格子，则之后不能再次进入这个格子。 例如 a b c e s f c s a d e e 这样的3 X 4 矩阵中包含一条字符串"bcced"的路径，但是矩阵中不包含"abcb"路径，因为字符串的第一个字符b占据了矩阵中的第一行第二个格子之后，路径不能再次进入该格子。
+```
+- dfs+回溯
+```c++
+class Solution {
+public:
+    bool hasPath(char* matrix, int rows, int cols, char* str)
+    {
+        bool* visted = new bool[rows * cols]{false};
+        for(int i = 0; i < rows; i++)
+            for(int j = 0; j < cols; j++){
+                if(matrix[i*cols + j] == str[0]){
+                    // 注意这里是i*cols + j, 因为这个错误卡了很久
+                    visted[i*cols + j] = true;
+                    if(dfs(matrix, i, j, 0, rows, cols, visted, str)) 
+                        return true;
+                    visted[i*cols + j] = false;
+                }
+            }
+        return false;
+    }
+
+    bool dfs(char* matrix, int i, int j, int index, int rows, int cols, bool* visted, char* str){
+        if(index == (strlen(str) - 1))
+            return true;
+        
+        int dir[4][2] = {{1,0}, {0,1}, {-1,0}, {0,-1}};
+        for(int next = 0; next < 4; next++){
+            int next_i = i + dir[next][0];
+            int next_j = j + dir[next][1];
+            if((next_i >= 0) && (next_i < rows) && (next_j >= 0) && (next_j < cols)){
+                if((matrix[next_i*cols + next_j] == str[index + 1]) && (visted[next_i*cols + next_j] == false)){
+                    visted[next_i*cols + next_j] = true;
+                    if(dfs(matrix, next_i, next_j, index + 1, rows, cols, visted, str)) 
+                        return true;
+                    visted[next_i*cols + next_j] = false;
+                }
+            }
+        }
+        return false;
     }
 };
 ```
