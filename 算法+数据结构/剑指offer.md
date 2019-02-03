@@ -10,6 +10,8 @@
 - [用两个栈实现队列](#用两个栈实现队列)
 - [跳台阶](#跳台阶)
 - [跳台阶II](#跳台阶ii)
+- [矩形覆盖](#矩形覆盖)
+- [旋转数组的最小数字](#旋转数组的最小数字)
 
 <!-- /TOC -->
 ## 数组中重复的数字
@@ -299,6 +301,81 @@ public:
             for(int j = 1; j < i ; j++)
                 dp[i] += dp[j];
         return dp[number];
+    }
+};
+```
+
+## 矩形覆盖
+> NowCoder/[矩形覆盖](https://www.nowcoder.com/practice/72a5a919508a4251859fb2cfb987a0e6?tpId=13&tqId=11163&tPage=1&rp=3&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
+
+**描述**
+```
+我们可以用2*1的小矩形横着或者竖着去覆盖更大的矩形。请问用n个2*1的小矩形无重叠地覆盖一个2*n的大矩形，总共有多少种方法？
+```
+
+```c++
+class Solution {
+public:
+    int rectCover(int number) {
+        if(number <= 0) 
+            return 0;
+        if(number == 1) 
+            return 1;
+        int f = 1;
+        int g = 2;
+        for(int i = 3; i <= number; i++){
+            g = g + f;
+            f = g - f;
+        }
+        return g;
+    }
+};
+```
+
+## 旋转数组的最小数字
+> NowCoder/[旋转数组的最小数字](https://www.nowcoder.com/practice/9f3231a991af4f55b95579b44b7a01ba?tpId=13&tqId=11159&tPage=1&rp=3&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
+
+**描述**
+```
+把一个数组最开始的若干个元素搬到数组的末尾，我们称之为数组的旋转。 输入一个非减排序的数组的一个旋转，输出旋转数组的最小元素。 例如数组{3,4,5,1,2}为{1,2,3,4,5}的一个旋转，该数组的最小值为1。 NOTE：给出的所有元素都大于0，若数组大小为0，请返回0。
+```
+- 二分查找：注意有重复的情况
+```c++
+class Solution {
+public:
+    int minNumberInRotateArray(vector<int> rotateArray) {
+        int r =  rotateArray.size() - 1;
+        if (r == -1) return 0;
+        int l = 0;
+        while(l <= r){
+            int mid = l + (r - l) / 2;
+            if(rotateArray[l] < rotateArray[r]){
+                return rotateArray[l];
+            }
+            // 只有两位的时候需要特殊考虑
+            if((r - l) == 1){ 
+                return rotateArray[r];
+            }
+            
+            // 如果中间位和左边和右边都相等，则无法判断最小值在哪一侧，只能直接遍历
+            if((rotateArray[mid] == rotateArray[l]) && (rotateArray[mid] == rotateArray[r])) {
+                int ret = INT_MAX;
+                for(int i = l; i <= r; i++){
+                    ret = min(ret, rotateArray[i]);
+                }
+                return ret;
+            }
+            
+            // 注意这里一定要加等号，假设Array[mid] == Array[r], 则 Array[l]一定大于Array[mid]
+            if(rotateArray[mid] <= rotateArray[r]){
+                r = mid;
+            }
+            else if(rotateArray[mid] >= rotateArray[l]){
+                l = mid;
+            }
+        }
+        
+        return 0;
     }
 };
 ```
