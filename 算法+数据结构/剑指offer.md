@@ -14,6 +14,7 @@
 - [旋转数组的最小数字](#旋转数组的最小数字)
 - [矩阵中的路径](#矩阵中的路径)
 - [整数拆分(动态规划|贪心)](#整数拆分动态规划贪心)
+- [二进制中1的个数](#二进制中1的个数)
 
 <!-- /TOC -->
 ## 数组中重复的数字
@@ -479,3 +480,20 @@ public:
 };
 ```
 
+## 二进制中1的个数
+> NowCoder/[二进制中1的个数](https://www.nowcoder.com/practice/8ee967e43c2c4ec193b040ea7fbb10b8?tpId=13&tqId=11164&tPage=1&rp=3&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
+- `n&n-1` 可以去除最后一位的1
+- 这题方法有很多，参考：[算法-求二进制数中1的个数](https://www.cnblogs.com/graphics/archive/2010/06/21/1752421.html)
+```c++
+class Solution {
+public:
+     int  NumberOf1(int n) {
+         int ret = 0;
+         while(n){
+             ret++;
+             n = n & (n-1);
+         }
+         return ret;
+     }
+};
+```
