@@ -1,3 +1,22 @@
+目录
+---
+<!-- TOC -->
+
+- [可视化视图的分类](#可视化视图的分类)
+- [折线图](#折线图)
+- [散点图](#散点图)
+- [直方图](#直方图)
+- [条形图](#条形图)
+- [箱线图](#箱线图)
+- [饼图](#饼图)
+- [高阶](#高阶)
+    - [热力图](#热力图)
+    - [蜘蛛图](#蜘蛛图)
+    - [lmplot线性回归可视化](#lmplot线性回归可视化)
+    - [二元变量关系](#二元变量关系)
+    - [成对关系](#成对关系)
+
+<!-- /TOC -->
 ## 可视化视图的分类
 ><数据分析45讲>/[第15讲](https://time.geekbang.org/column/article/77664)
 - 比较
@@ -209,6 +228,18 @@ plt.show()
 
 <div align="center"><img src="../_image/sprider_fig1.png" width=""/></div>
 
+### lmplot线性回归可视化
+> 知乎/[seaborn入门（四）：回归模型lmplot](https://zhuanlan.zhihu.com/p/25909753)
+```Python
+import matplotlib.pyplot as plt
+import seaborn as sns
+# sns.set_style("whitegrid")
+sns.set(context="notebook", style="whitegrid",palette="dark")
+tips = sns.load_dataset("tips") 
+# 研究小费tips与总消费金额total_bill在不同日子的关系
+g = sns.lmplot(x="total_bill", y="tip", col="day", hue="day",data=tips, col_wrap=2, size=3)
+```
+<div align="center"><img src="../_image/lmplot_fig1.png" width=""/></div>
 
 ### 二元变量关系
 - 相当于`seaborn`的`scatter`的扩展
