@@ -23,3 +23,7 @@ tensorboard --logdir=/path/to/log-directory --host=localhost
 ## 新建环境后安装（未测试）
 1. 新建环境 `virtualenv --system=site-packages - p python3.6 ./py3`
 2. 安装包 `pip3 install tensorflow==1.12 jupyter matplotlib numpy pandas seaborn`
+
+## windows上c++配置
+下载`MinGW`，然后在环境变量中添加`D:\MinGW\mingw32\bin`, 即可使用g++
+sublimetext中可以直接使用
