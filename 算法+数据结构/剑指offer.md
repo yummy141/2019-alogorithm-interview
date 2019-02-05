@@ -14,7 +14,11 @@
 - [旋转数组的最小数字](#旋转数组的最小数字)
 - [矩阵中的路径](#矩阵中的路径)
 - [整数拆分(动态规划|贪心)](#整数拆分动态规划贪心)
-- [二进制中1的个数](#二进制中1的个数)
+- [二进制中1的个数（位运算）](#二进制中1的个数位运算)
+- [数值的整数次方（位运算）](#数值的整数次方位运算)
+- [删除链表中重复的节点](#删除链表中重复的节点)
+- [调整数组顺序使奇数位于偶数前面（数组）](#调整数组顺序使奇数位于偶数前面数组)
+- [链表中倒数第k个结点](#链表中倒数第k个结点)
 
 <!-- /TOC -->
 ## 数组中重复的数字
@@ -480,7 +484,7 @@ public:
 };
 ```
 
-## 二进制中1的个数
+## 二进制中1的个数（位运算）
 > NowCoder/[二进制中1的个数](https://www.nowcoder.com/practice/8ee967e43c2c4ec193b040ea7fbb10b8?tpId=13&tqId=11164&tPage=1&rp=3&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
 - `n&n-1` 可以去除最后一位的1
 - 这题方法有很多，参考：[算法-求二进制数中1的个数](https://www.cnblogs.com/graphics/archive/2010/06/21/1752421.html)
@@ -495,5 +499,156 @@ public:
          }
          return ret;
      }
+};
+```
+
+## 数值的整数次方（位运算）
+> NowCoder/[数值的整数次方](https://www.nowcoder.com/practice/1a834e5e3e1a4b7ba251417554e07c00?tpId=13&tqId=11165&tPage=1&rp=3&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
+
+**描述**
+```
+给定一个double类型的浮点数base和int类型的整数exponent。求base的exponent次方。
+```
+- 快速幂
+- 时间复杂度O(logN)
+```c++
+class Solution {
+public:
+    double Power(double base, int exponent) {
+        int p = abs(exponent);
+        double ret = 1.0;
+        while(p > 0){
+            if(p & 1){
+               ret *= base;
+               p--;
+            }
+                
+            base *= base;
+            p >>= 1;
+        }
+        return exponent > 0 ? ret : 1/ret;
+    }
+};
+```
+
+## 删除链表中重复的节点
+
+**描述**
+```
+在一个排序的链表中，存在重复的结点，请删除该链表中重复的结点，重复的结点不保留，返回链表头指针。 例如，链表1->2->3->3->4->4->5 处理后为 1->2->5
+```
+- 由于可能列表中全部都是重复结点，所以要设置一个哨兵节点
+- 注意一定要利用`&&`的短路原理，先判定当前指针是否指向NULL
+- 注意删除一个指针后要指向`NULL`
+    - 原因是`delete`只释放指针指向的内存，但指针仍然指向这块内存
+```c++
+/*
+struct ListNode {
+    int val;
+    struct ListNode *next;
+    ListNode(int x) :
+        val(x), next(NULL) {
+    }
+};
+*/
+class Solution {
+public:
+    ListNode* deleteDuplication(ListNode* pHead)
+    {
+        if(pHead == NULL) 
+            return pHead;
+        
+        ListNode* head = new ListNode{-1};
+        head->next = pHead;
+        
+        ListNode* pre = head;
+        ListNode* cur = pHead;
+        while(cur!=NULL && cur->next != NULL){
+            if(cur->val != cur->next->val){
+                pre = cur;
+                cur = cur->next;
+            }
+            else{
+                int tempVal = cur->val;
+                while(cur != NULL && cur->val == tempVal){
+                    auto temp = cur;
+                    cur = cur->next;
+                    
+                    delete temp;
+                    temp = NULL;
+                }
+                pre->next = cur;
+            }
+        }
+        
+        auto ret = head->next;
+        delete head;
+        head = NULL;
+        return ret;
+    }
+};
+```
+
+## 调整数组顺序使奇数位于偶数前面（数组）
+
+**描述**
+```
+输入一个整数数组，实现一个函数来调整该数组中数字的顺序，使得所有的奇数位于数组的前半部分，所有的偶数位于数组的后半部分，并保证奇数和奇数，偶数和偶数之间的相对位置不变。
+```
+- 由于需要相对位置不变，就是用类似冒泡排序的方法，每一趟保证提一个偶数到最后
+- 如果不需要稳定的话，可使用快速排序的双指针法
+```c++
+class Solution {
+public:
+    void reOrderArray(vector<int> &array) {
+         for(int i = 0; i < array.size()/2; i++)
+             for(int j = 0; j < array.size() - i - 1; j++)
+             {
+                 if((array[j]%2 == 0) && (array[j+1]%2 != 0)){
+                    swap(array[j], array[j+1]);
+                 }
+             }
+    }
+};
+```
+
+## 链表中倒数第k个结点
+
+**描述**
+```
+输入一个链表，输出该链表中倒数第k个结点。
+```
+- 快慢指针
+```c++
+/*
+struct ListNode {
+	int val;
+	struct ListNode *next;
+	ListNode(int x) :
+			val(x), next(NULL) {
+	}
+};*/
+class Solution {
+public:
+    ListNode* FindKthToTail(ListNode* pListHead, unsigned int k) {
+        if(pListHead == NULL)
+            return NULL;
+        ListNode* fast = pListHead;
+        ListNode* slow = pListHead;
+        
+        while(fast != NULL && k>0){
+            fast = fast->next;
+            k--;
+        }
+        
+        if(k > 0)
+            return NULL;
+        
+        while(fast != NULL){
+            fast = fast->next;
+            slow = slow->next;
+        }
+        return slow;
+    }
 };
 ```
