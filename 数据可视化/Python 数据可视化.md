@@ -9,6 +9,7 @@
 - [条形图](#条形图)
 - [箱线图](#箱线图)
 - [饼图](#饼图)
+- [countplot显示一个数据表中的某一列数据里的成分](#countplot显示一个数据表中的某一列数据里的成分)
 - [高阶](#高阶)
     - [热力图](#热力图)
     - [蜘蛛图](#蜘蛛图)
@@ -52,6 +53,15 @@ sns.lineplot(x="x", y="y", data=df)
 plt.show()
 ```
 <div align="center"><img src="../_image/line_fig2.png" width=""/></div>    
+
+```Python
+# 与lineplot类似，但是会着重数据点标注出来
+sns.set_style("darkgrid")
+df = pd.DataFrame({'x': x, 'y': y})
+sns.pointplot(x="x", y="y", data=df)
+plt.show()
+```
+<div align="center"><img src="../_image/line_fig3.png" width=""/></div>    
 
 ## 散点图
 ```Python
@@ -180,6 +190,16 @@ plt.show()
 
 <div align="center"><img src="../_image/pie_fig1.png" width=""/></div>
 
+
+## sns.countplot显示一个数据表中的某一列数据里的成分
+```Python
+import seaborn as sns
+import matplotlib.pyplot as plt
+sns.set_style("darkgrid")
+sns.countplot(x="Survived", hue="Sex", data=train_data)
+plt.show()
+```
+<div align="center"><img src="../_image/countplot_fig1.png" width=""/></div>
 
 ## 高阶
 ### 热力图
