@@ -9,7 +9,7 @@
 - [条形图](#条形图)
 - [箱线图](#箱线图)
 - [饼图](#饼图)
-- [countplot显示一个数据表中的某一列数据里的成分](#countplot显示一个数据表中的某一列数据里的成分)
+- [sns.countplot显示一个数据表中的某一列数据里的成分](#snscountplot显示一个数据表中的某一列数据里的成分)
 - [高阶](#高阶)
     - [热力图](#热力图)
     - [蜘蛛图](#蜘蛛图)
@@ -214,9 +214,17 @@ data=flights.pivot('year','month','passengers')
 # 用 Seaborn 画热力图
 sns.heatmap(data)
 plt.show()
-
 ```
 
+**实战Tip**
+```Python
+# 用热力图呈现 features_mean 字段之间的相关性
+corr = data[features_mean].corr()
+plt.figure(figsize=(14,14))
+# annot=True 显示每个方格的数据
+sns.heatmap(corr, annot=True)
+plt.show()
+```
 <div align="center"><img src="../_image/heatmap_fig1.png" width=""/></div>
 
 ### 蜘蛛图
