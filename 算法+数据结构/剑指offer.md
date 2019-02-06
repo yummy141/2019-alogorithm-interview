@@ -19,6 +19,11 @@
 - [删除链表中重复的节点](#删除链表中重复的节点)
 - [调整数组顺序使奇数位于偶数前面（数组）](#调整数组顺序使奇数位于偶数前面数组)
 - [链表中倒数第k个结点](#链表中倒数第k个结点)
+- [链表中环的入口节点（链表）](#链表中环的入口节点链表)
+- [反转链表](#反转链表)
+- [合并两个排序的链表](#合并两个排序的链表)
+- [二叉树的镜像](#二叉树的镜像)
+- [对称的二叉树](#对称的二叉树)
 
 <!-- /TOC -->
 ## 数组中重复的数字
@@ -650,5 +655,206 @@ public:
         }
         return slow;
     }
+};
+```
+
+## 链表中环的入口节点（链表）
+
+**描述**
+```
+给一个链表，若其中包含环，请找出该链表的环的入口结点，否则，输出null。
+```
+**思路**
+- 设置快慢指针，快指针每次走两步，慢指针每次走一步，等它们相遇后。相遇后，将一指针指向头指针，然后两个指针同时向前（步长为一步），再次相遇即为入口。
+> 证明参考:牛客网/[讨论区](https://www.nowcoder.com/questionTerminal/253d2c59ec3e4bc68da16833f79a38e4)
+```c++
+/*
+struct ListNode {
+    int val;
+    struct ListNode *next;
+    ListNode(int x) :
+        val(x), next(NULL) {
+    }
+};
+*/
+class Solution {
+public:
+    ListNode* EntryNodeOfLoop(ListNode* pHead)
+    {
+        if(pHead == NULL)
+            return NULL;
+        ListNode* fast = pHead;
+        ListNode* slow = pHead;
+        while((slow->next != NULL) && (fast->next->next != NULL)){
+            fast = fast->next->next;
+            slow = slow->next;
+            if(fast == slow){
+                slow = pHead;
+                while(slow != fast){
+                    slow = slow->next;
+                    fast = fast->next;
+                } 
+                return slow;
+            }
+        }
+        return NULL;
+    }
+};
+```
+
+## 反转链表
+
+**描述**
+```
+输入一个链表，反转链表后，输出新链表的表头。
+```
+- 三指针
+```c++
+/*
+struct ListNode {
+	int val;
+	struct ListNode *next;
+	ListNode(int x) :
+			val(x), next(NULL) {
+	}
+};*/
+class Solution {
+public:
+    ListNode* ReverseList(ListNode* pHead) {
+         if(pHead == nullptr) return pHead;
+         ListNode* pre = pHead;
+         ListNode* cur = pHead->next;
+         ListNode* nex = cur->next;
+         pre->next = nullptr;
+         while(nex != nullptr)
+         {
+             cur->next = pre;
+             pre = cur;
+             cur = nex;
+             nex = nex->next;
+         }
+         cur->next = pre;
+         return cur;
+    }
+};
+```
+
+## 合并两个排序的链表
+> Nowcoder/[合并两个排序的链表](https://www.nowcoder.com/practice/d8b6b4358f774294a89de2a6ac4d9337?tpId=13&tqId=11169&tPage=1&rp=3&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
+**描述**
+```
+输入两个单调递增的链表，输出两个链表合成后的链表，当然我们需要合成后的链表满足单调不减规则。
+```
+- 递归
+```c++
+/*
+struct ListNode {
+	int val;
+	struct ListNode *next;
+	ListNode(int x) :
+			val(x), next(NULL) {
+	}
+};*/
+class Solution {
+public:
+    ListNode* Merge(ListNode* pHead1, ListNode* pHead2)
+    {
+        if(pHead1 == nullptr) return pHead2;
+        if(pHead2 == nullptr) return pHead1;
+        
+        if(pHead1->val < pHead2->val)
+        {
+            pHead1->next = Merge(pHead1->next, pHead2);
+            return pHead1;
+        }
+        else
+        {
+            pHead2->next = Merge(pHead1, pHead2->next);
+            return pHead2;
+        }
+    }
+};
+```
+
+## 二叉树的镜像
+> Nowcoder/[二叉树的镜像](https://www.nowcoder.com/practice/564f4c26aa584921bc75623e48ca3011?tpId=13&tqId=11171&tPage=1&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)  
+**描述**
+```
+操作给定的二叉树，将其变换为源二叉树的镜像。
+输入描述:
+二叉树的镜像定义：源二叉树 
+    	    8
+    	   /  \
+    	  6   10
+    	 / \  / \
+    	5  7 9 11
+    	镜像二叉树
+    	    8
+    	   /  \
+    	  10   6
+    	 / \  / \
+    	11 9 7  5
+```
+
+```c++
+/*
+struct TreeNode {
+	int val;
+	struct TreeNode *left;
+	struct TreeNode *right;
+	TreeNode(int x) :
+			val(x), left(NULL), right(NULL) {
+	}
+};*/
+class Solution {
+public:
+    void Mirror(TreeNode *pRoot) {
+        if(pRoot == NULL)
+            return;
+        swap(pRoot->left, pRoot->right);
+        
+        Mirror(pRoot->left);
+        Mirror(pRoot->right);
+    }
+};
+```
+
+## 对称的二叉树
+> NowCoder/[对称的二叉树](https://www.nowcoder.com/practice/ff05d44dfdb04e1d83bdbdab320efbcb?tpId=13&tqId=11211&tPage=3&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)  
+**描述**
+```
+请实现一个函数，用来判断一颗二叉树是不是对称的。注意，如果一个二叉树同此二叉树的镜像是同样的，定义其为对称的。
+```
+```c++
+/*
+struct TreeNode {
+    int val;
+    struct TreeNode *left;
+    struct TreeNode *right;
+    TreeNode(int x) :
+            val(x), left(NULL), right(NULL) {
+    }
+};
+*/
+class Solution {
+public:
+    bool isSymmetrical(TreeNode* pRoot)
+    {
+        if(pRoot == NULL) return true;
+        
+        return dfs(pRoot->left, pRoot->right);
+    }
+    
+    bool dfs(TreeNode* l, TreeNode* r){
+        if(l == NULL && r == NULL) return true;
+        if(l == NULL || r == NULL) return false;
+        
+        if(l->val == r->val){
+            return dfs(l->left, r->right) && dfs(l->right, r->left);
+        }
+        else
+            return false;
+    }
+
 };
 ```
