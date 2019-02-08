@@ -24,6 +24,9 @@
 - [合并两个排序的链表](#合并两个排序的链表)
 - [二叉树的镜像](#二叉树的镜像)
 - [对称的二叉树](#对称的二叉树)
+- [顺时针打印矩阵](#顺时针打印矩阵)
+- [包含min函数的栈（数据结构）](#包含min函数的栈数据结构)
+- [栈的压入、弹出序列](#栈的压入弹出序列)
 
 <!-- /TOC -->
 ## 数组中重复的数字
@@ -740,7 +743,8 @@ public:
 ```
 
 ## 合并两个排序的链表
-> Nowcoder/[合并两个排序的链表](https://www.nowcoder.com/practice/d8b6b4358f774294a89de2a6ac4d9337?tpId=13&tqId=11169&tPage=1&rp=3&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
+> Nowcoder/[合并两个排序的链表](https://www.nowcoder.com/practice/d8b6b4358f774294a89de2a6ac4d9337?tpId=13&tqId=11169&tPage=1&rp=3&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)   
+
 **描述**
 ```
 输入两个单调递增的链表，输出两个链表合成后的链表，当然我们需要合成后的链表满足单调不减规则。
@@ -777,7 +781,8 @@ public:
 ```
 
 ## 二叉树的镜像
-> Nowcoder/[二叉树的镜像](https://www.nowcoder.com/practice/564f4c26aa584921bc75623e48ca3011?tpId=13&tqId=11171&tPage=1&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)  
+> Nowcoder/[二叉树的镜像](https://www.nowcoder.com/practice/564f4c26aa584921bc75623e48ca3011?tpId=13&tqId=11171&tPage=1&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking) 
+
 **描述**
 ```
 操作给定的二叉树，将其变换为源二叉树的镜像。
@@ -821,6 +826,7 @@ public:
 
 ## 对称的二叉树
 > NowCoder/[对称的二叉树](https://www.nowcoder.com/practice/ff05d44dfdb04e1d83bdbdab320efbcb?tpId=13&tqId=11211&tPage=3&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)  
+
 **描述**
 ```
 请实现一个函数，用来判断一颗二叉树是不是对称的。注意，如果一个二叉树同此二叉树的镜像是同样的，定义其为对称的。
@@ -856,5 +862,107 @@ public:
             return false;
     }
 
+};
+```
+
+## 顺时针打印矩阵
+> NowCoder/[顺时针打印矩阵](https://www.nowcoder.com/practice/9b4c81a02cd34f76be2659fa0d54342a?tpId=13&tqId=11172&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+**描述**
+```
+输入一个矩阵，按照从外向里以顺时针的顺序依次打印出每一个数字，例如，如果输入如下4 X 4矩阵： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 则依次打印出数字1,2,3,4,8,12,16,15,14,13,9,5,6,7,11,10.
+```
+```c++
+class Solution {
+public:
+    vector<int> printMatrix(vector<vector<int> > matrix) {
+        vector<int> ret;
+        int rl = 0, rr = matrix.size() - 1;
+        int cl = 0, cr = matrix[0].size() - 1;
+        while(rl<=rr && cl<=cr){
+            for(int i = cl; i <= cr; i++)
+                ret.push_back(matrix[rl][i]);
+            for(int i = rl + 1; i <= rr; i++)
+                ret.push_back(matrix[i][cr]);
+            if(rl != rr)  // 注意这里，要考虑总行数或总列数为奇数的情况
+                for(int i = cr - 1; i >= cl; i--)
+                    ret.push_back(matrix[rr][i]);
+            if(cl != cr)
+                for(int i = rr - 1; i > rl; i--)
+                    ret.push_back(matrix[i][cl]);
+            
+            rl++; rr--;
+            cl++; cr--;
+        }
+        return ret;
+    }
+};
+```
+
+## 包含min函数的栈（数据结构）
+> NowCoder/[包含min函数的栈](https://www.nowcoder.com/practice/4c776177d2c04c2494f2555c9fcc1e49?tpId=13&tqId=11173&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+**描述**
+```
+定义栈的数据结构，请在该类型中实现一个能够得到栈中所含最小元素的min函数（时间复杂度应为O（1））
+```
+- 使用辅助栈？（不明白这题考察什么）
+```c++
+class Solution {
+    stack<int> s;
+    stack<int> s_min;
+public:
+    void push(int value) {
+        s.push(value);
+        if(s_min.empty())     // 注意判空
+            s_min.push(value);
+        if(s_min.top() >= value) // 注意小于等于，否则pop会出错
+            s_min.push(value);
+    }
+    void pop() {
+        if(s.top() == s_min.top())
+            s_min.pop();
+        s.pop();
+    }
+    int top() {
+        return s.top();
+    }
+    int min() {
+        return s_min.top();
+    }
+};
+```
+
+## 栈的压入、弹出序列
+> NowCode/[栈的压入、弹出序列](https://www.nowcoder.com/practice/d77d11405cc7470d82554cb392585106?tpId=13&tqId=11174&tPage=2&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
+
+**描述**
+```
+输入两个整数序列，第一个序列表示栈的压入顺序，请判断第二个序列是否可能为该栈的弹出顺序。假设压入栈的所有数字均不相等。例如序列1,2,3,4,5是某栈的压入顺序，序列4,5,3,2,1是该压栈序列对应的一个弹出序列，但4,3,5,1,2就不可能是该压栈序列的弹出序列。（注意：这两个序列的长度是相等的）
+```
+**思路**
+- 定义一个辅助栈将入栈元素入栈
+- 当栈顶与出栈数组的元素相符时，出栈（注意判空）
+- 最后栈为空则出栈序列合法，反之则不合法
+```c++
+class Solution {
+public:
+    bool IsPopOrder(vector<int> pushV,vector<int> popV) {
+        if(pushV.empty()) return false;
+        
+        stack<int> tmp;
+        int j = 0;
+        for(int i = 0; i < pushV.size(); i++){
+            tmp.push(pushV[i]);
+            while(!tmp.empty() && tmp.top() == popV[j]){ // 注意判空
+                tmp.pop();
+                j++;
+            }
+        }
+        if(tmp.empty())
+            return true;
+        else
+            return false;
+    }
 };
 ```
