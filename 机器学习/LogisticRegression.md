@@ -1,3 +1,16 @@
+## Logistic Regression(逻辑回归)
+- 属于判别式模型，伴有L0,L1,L2等正则化方式。应用广泛
+- `sigmoid`函数
+$$f(x)=\frac{1}{1+e^{-x}}$$
+- `softmax`函数是它的变形
+
+## 优缺点
+- 速度快，计算量小，能够观测样本概率分数
+- 容易欠拟合，只能处理线性分类问题
+- 对于非线性分类问题，需要进行转化
+
+### TensorFlow对lg的实现
+```Python
 import tensorflow as tf
 import matplotlib.pyplot as plt
 import numpy as np
@@ -161,3 +174,4 @@ with tf.Session() as sess:
 # 	y_proba_val = y_proba.eval(feed_dict={X: X_test, y: y_test})
 
 # reset_graph()
+```
