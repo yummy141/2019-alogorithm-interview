@@ -27,6 +27,10 @@
 - [顺时针打印矩阵](#顺时针打印矩阵)
 - [包含min函数的栈（数据结构）](#包含min函数的栈数据结构)
 - [栈的压入、弹出序列](#栈的压入弹出序列)
+- [从上往下打印二叉树](#从上往下打印二叉树)
+- [把二叉树打印成多行](#把二叉树打印成多行)
+- [按之字形顺序打印二叉树](#按之字形顺序打印二叉树)
+- [二叉搜索树的后序遍历序列](#二叉搜索树的后序遍历序列)
 
 <!-- /TOC -->
 ## 数组中重复的数字
@@ -963,6 +967,200 @@ public:
             return true;
         else
             return false;
+    }
+};
+```
+
+## 从上往下打印二叉树
+> NowCode/[从上往下打印二叉树](https://www.nowcoder.com/practice/7fe2212963db4790b57431d9ed259701?tpId=13&tqId=11175&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+**描述**
+```
+从上往下打印出二叉树的每个节点，同层节点从左至右打印。
+```
+- 用队列来实现
+```c++
+/*
+struct TreeNode {
+	int val;
+	struct TreeNode *left;
+	struct TreeNode *right;
+	TreeNode(int x) :
+			val(x), left(NULL), right(NULL) {
+	}
+};*/
+class Solution {
+public:
+    vector<int> PrintFromTopToBottom(TreeNode* root) {
+        vector<int> ret;
+        if(root == NULL) 
+            return ret;
+        queue<TreeNode*> q;
+        q.push(root);
+        while(!q.empty()){
+            auto temp = q.front();
+            q.pop();
+            ret.push_back(temp->val);
+            if(temp->left != NULL)
+                q.push(temp->left);
+            if(temp->right != NULL)
+                q.push(temp->right);
+        }
+        return ret;
+    }
+};
+```
+
+## 把二叉树打印成多行
+> NowCode/[把二叉树打印成多行](https://www.nowcoder.com/practice/445c44d982d04483b04a54f298796288?tpId=13&tqId=11213&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+**描述**
+```
+从上到下按层打印二叉树，同一层结点从左至右输出。每一层输出一行
+```
+- 多加入两个变量`curL`和`nexL`分别记录当前行/下一行要打印的数值，当`curL`为零时交换
+- 利用额外的`temp`动态数组，每一行每一行地加入`ret`返回数组中
+```c++
+/*
+struct TreeNode {
+    int val;
+    struct TreeNode *left;
+    struct TreeNode *right;
+    TreeNode(int x) :
+            val(x), left(NULL), right(NULL) {
+    }
+};
+*/
+class Solution {
+public:
+        vector<vector<int> > Print(TreeNode* pRoot) {
+            vector<vector<int> > ret;
+            vector<int> temp;
+            if(pRoot == NULL) return ret;
+            int curL = 1;
+            int nexL = 0;
+            queue<TreeNode* > q;
+            q.push(pRoot);
+            while(!q.empty()){
+                auto cur  = q.front();
+                q.pop();
+                curL--;
+                temp.push_back(cur->val);
+                
+                if(cur->left != NULL){
+                    q.push(cur->left);
+                    nexL++;
+                }
+                
+                if(cur->right != NULL){
+                    q.push(cur->right);
+                    nexL++;
+                }
+                
+                if(curL == 0){
+                    ret.push_back(temp);
+                    temp.clear();
+                    curL = nexL;
+                    nexL = 0;
+                }
+            }
+            return ret;
+        }
+    
+};
+```
+
+## 按之字形顺序打印二叉树
+> NowCoder/[按之字形顺序打印二叉树](https://www.nowcoder.com/practice/91b69814117f4e8097390d107d2efbe0?tpId=13&tqId=11212&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+**描述**
+```
+请实现一个函数按照之字形打印二叉树，即第一行按照从左到右的顺序打印，第二层按照从右至左的顺序打印，第三行按照从左到右的顺序打印，其他行以此类推。
+```
+- 按照上题代码加个`reverse`的奇偶判断
+- 用栈的思路解决，定义两个栈，分别负责从左到右输出和从右往左输出。
+```c++
+class Solution {
+public:
+        vector<vector<int> > Print(TreeNode* pRoot) {
+            vector<vector<int> > ret;
+            vector<int> temp;
+            if(pRoot == NULL) 
+                return ret;
+            int index = 0;
+            
+            // s[0]从左到右输出，s[1]从右往左输出
+            // s[0]从右往左入栈，s[1]从左往右入栈
+            stack<TreeNode* > s[2];
+            s[0].push(pRoot);
+            while(!s[index & 1].empty()){
+                auto cur = s[index & 1].top();
+                s[index & 1].pop();
+                temp.push_back(cur->val);
+                
+                if(index & 1){// s[1]
+                    if(cur->right != NULL)
+                        s[0].push(cur->right);
+                    
+                    if(cur->left != NULL)
+                        s[0].push(cur->left);
+                }
+                else{//s[0]
+                    if(cur->left != NULL)
+                        s[1].push(cur->left);
+                    
+                    if(cur->right != NULL)
+                        s[1].push(cur->right);
+                }
+                
+                if(s[index & 1].empty()){
+                    index++;
+                    ret.push_back(temp);
+                    temp.clear();
+                }
+                
+            }
+            return ret;
+        }
+    
+};
+```
+
+## 二叉搜索树的后序遍历序列
+> NowCoder/[二叉搜索树的后序遍历序列](https://www.nowcoder.com/practice/a861533d45854474ac791d90e447bafd?tpId=13&tqId=11176&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+**描述**
+```
+输入一个整数数组，判断该数组是不是某二叉搜索树的后序遍历的结果。如果是则输出Yes,否则输出No。假设输入的数组的任意两个数字都互不相同。
+```
+- 二叉搜索树的定义: 左子树的值小于右子树
+- 递归判断，定义`mid`分界点，注意考虑没有右子树的情况，即`mid`不存在时的对应取值
+```c++
+class Solution {
+public:
+    bool VerifySquenceOfBST(vector<int> sequence) {
+        if(sequence.empty())
+            return false;
+        
+        return dfs(sequence, 0, sequence.size());
+    }
+    
+    bool dfs(vector<int>& s, int l, int r){
+        if(r - l <= 1)
+            return true;
+        int base = s[r-1];
+        int mid = l;
+        for(;mid < r-1; mid++)
+            if(s[mid] > base){
+                break;
+            }
+            
+        for(int i = mid; i < r-1; i++){
+            if(s[i] < base)
+                return false;
+        }
+        
+        return dfs(s, l, mid) && dfs(s, mid, r-1);
     }
 };
 ```
