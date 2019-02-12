@@ -31,6 +31,8 @@
 - [把二叉树打印成多行](#把二叉树打印成多行)
 - [按之字形顺序打印二叉树](#按之字形顺序打印二叉树)
 - [二叉搜索树的后序遍历序列](#二叉搜索树的后序遍历序列)
+- [二叉树中和为某一值的路径](#二叉树中和为某一值的路径)
+- [复杂链表的控制](#复杂链表的控制)
 
 <!-- /TOC -->
 ## 数组中重复的数字
@@ -1161,6 +1163,107 @@ public:
         }
         
         return dfs(s, l, mid) && dfs(s, mid, r-1);
+    }
+};
+```
+
+## 二叉树中和为某一值的路径
+> NowCoder/[二叉树中和为某一值的路径](https://www.nowcoder.com/practice/b736e784e3e34731af99065031301bca?tpId=13&tqId=11177&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+**描述**
+```
+输入一颗二叉树的跟节点和一个整数，打印出二叉树中结点值的和为输入整数的所有路径。路径定义为从树的根结点开始往下一直到叶结点所经过的结点形成一条路径。(注意: 在返回值的list中，数组长度大的数组靠前)
+```
+- 路径是指根节点到叶子节点的路径
+- 回溯法
+```c++
+/*
+struct TreeNode {
+	int val;
+	struct TreeNode *left;
+	struct TreeNode *right;
+	TreeNode(int x) :
+			val(x), left(NULL), right(NULL) {
+	}
+};*/
+class Solution {
+public:
+    vector<vector<int> > ret;
+    vector<int> trace;
+    vector<vector<int> > FindPath(TreeNode* root,int expectNumber) {
+        if(root != nullptr)
+            dfs(root, expectNumber);
+        return ret;
+    }
+    
+    void dfs(TreeNode* cur, int n){
+        trace.push_back(cur->val);
+        if(cur->left == nullptr && cur->right == nullptr){
+            if(cur->val == n){
+                ret.push_back(trace);
+            }
+        }
+        
+        if(cur->left != nullptr){
+            dfs(cur->left, n - cur->val);
+        }
+        if(cur->right != nullptr){
+            dfs(cur->right, n - cur->val);
+        }
+        trace.pop_back();
+    }
+};
+```
+
+## 复杂链表的控制
+> NowCoder/[复杂链表的控制](https://www.nowcoder.com/practice/b736e784e3e34731af99065031301bca?tpId=13&tqId=11177&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+**描述**
+```
+输入一个复杂链表（每个节点中有节点值，以及两个指针，一个指向下一个节点，另一个特殊指针指向任意一个节点），返回结果为复制后复杂链表的head。（注意，输出结果中请不要返回参数中的节点引用，否则判题程序会直接返回空）
+```
+- 问题的难点在于无法实时知道特殊指针指向的位置
+- 因此需要先复制所有节点，再找到特殊指针指向的位置，再断掉指针
+```c++
+/*
+struct RandomListNode {
+    int label;
+    struct RandomListNode *next, *random;
+    RandomListNode(int x) :
+            label(x), next(NULL), random(NULL) {
+    }
+};
+*/
+class Solution {
+public:
+    RandomListNode* Clone(RandomListNode* pHead)
+    {
+        if(pHead == nullptr)
+            return nullptr;
+        auto cur = pHead;
+        while(cur != nullptr){
+            auto t = new RandomListNode(cur->label);
+            t->next = cur->next;
+            cur->next = t;
+            cur = t->next;
+        }
+        
+        cur = pHead;
+        while(cur != nullptr){
+            auto t = cur->next;
+            if(cur->random != nullptr)
+                t->random = cur->random->next;
+            cur = t->next;
+        }
+        
+        auto ret = pHead->next;
+        cur = pHead;
+        while(cur->next != nullptr){ // 考虑组后只有两个节点的情况，断完后, cur->next==nullptr，循环不再继续
+            auto t = cur->next;
+            cur->next = t->next;
+            cur = t;
+        }
+        return ret;
     }
 };
 ```
