@@ -201,6 +201,15 @@ plt.show()
 ```
 <div align="center"><img src="../_image/countplot_fig1.png" width=""/></div>
 
+## sns.kdeplot显示连续分布
+```Python
+facet = sns.FacetGrid(train, hue="Survived",aspect=2)
+facet.map(sns.kdeplot,'Fare',shade= True)
+facet.set(xlim=(0, 200))
+facet.add_legend()
+```
+<div align="center"><img src="../_image/kdeplot_fig1.png" width=""/></div>
+
 ## 高阶
 ### 热力图
 - 一种多元变量分析方法

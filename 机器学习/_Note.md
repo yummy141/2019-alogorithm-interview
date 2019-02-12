@@ -64,6 +64,43 @@ housing_tr = pd.DataFrame(X, columns=housing_num.columns,
                           index = list(housing.index.values))
 ```
 
+## 查找最优模型
+当不知道该用什么模型时，用多个默认参数的模型开始尝试
+```Python
+from sklearn.ensemble import AdaBoostClassifier
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.ensemble import ExtraTreesClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.svm import SVC
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.naive_bayes import GaussianNB
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+from sklearn.model_selection import KFold
+import warnings
+warnings.filterwarnings('ignore')
+models = []
+models.append(("AB",AdaBoostClassifier()))
+models.append(("GBM",GradientBoostingClassifier()))
+models.append(("RF",RandomForestClassifier()))
+models.append(("ET",ExtraTreesClassifier()))
+models.append(("SVC",SVC()))
+models.append(("KNN",KNeighborsClassifier()))
+models.append(("LR",LogisticRegression()))
+models.append(("GNB",GaussianNB()))
+models.append(("LDA",LinearDiscriminantAnalysis()))
+
+names = []
+results = []
+
+for name,model in models:
+    kfold = KFold(n_splits=5,random_state=42)
+    result = cross_val_score(model,train_features,train_labels,scoring="accuracy",cv=kfold)
+    names.append(name)
+    results.append(result)
+    print("{}  Mean:{:.4f}(Std{:.4f})".format(name,result.mean(),result.std()))
+```
+
 ## 定制转换器
 虽然Scikit-Learn提供了许多有用的transformers，但我们需要编写我们自己的transformer来执行诸如自定义清理操作或特定组合属性等任务。 我们希望自定义的transformers与Scikit-Learn的功能（例如管道）无缝协作，并且由于Scikit-Learn依赖于duck typing（不是继承），所以你需要的只是创建一个类并实现三个函数：
 * fit（）返回self（）

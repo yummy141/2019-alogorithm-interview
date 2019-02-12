@@ -10,6 +10,11 @@ jt -t oceans16 -f fira -fs 13 -cellw 90% -ofs 11 -dfs 11 -T
 jupyter kernelspec list
 python3 -m ipykernel install --user --name=<>
 ```
+4. 去除warning
+```Python
+import warnings
+warnings.filterwarnings('ignore')
+```
 
 ## pip相关
 1. 更新包 `pip install <package> --upgrade`
@@ -26,4 +31,4 @@ tensorboard --logdir=/path/to/log-directory --host=localhost
 
 ## windows上c++配置
 下载`MinGW`，然后在环境变量中添加`D:\MinGW\mingw32\bin`, 即可使用g++
-sublimetext中可以直接使用
+`sublimetext`中可以直接使用
