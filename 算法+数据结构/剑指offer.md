@@ -33,6 +33,12 @@
 - [二叉搜索树的后序遍历序列](#二叉搜索树的后序遍历序列)
 - [二叉树中和为某一值的路径](#二叉树中和为某一值的路径)
 - [复杂链表的控制](#复杂链表的控制)
+- [二叉搜索树与双向链表](#二叉搜索树与双向链表)
+- [序列化二叉树](#序列化二叉树)
+- [字符串的排列](#字符串的排列)
+- [数组中超过一半的数字](#数组中超过一半的数字)
+- [数组中第k大的元素](#数组中第k大的元素)
+- [数字1的个数](#数字1的个数)
 
 <!-- /TOC -->
 ## 数组中重复的数字
@@ -1262,6 +1268,262 @@ public:
             auto t = cur->next;
             cur->next = t->next;
             cur = t;
+        }
+        return ret;
+    }
+};
+```
+
+## 二叉搜索树与双向链表
+> NowCoder/[二叉搜索树与双向链表](https://www.nowcoder.com/practice/947f6eb80d944a84850b0538bf0ec3a5?tpId=13&tqId=11179&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+**描述**
+```
+输入一棵二叉搜索树，将该二叉搜索树转换成一个排序的双向链表。要求不能创建任何新的结点，只能调整树中结点指针的指向。
+```
+- 中序遍历的顺序即为排序好的顺序
+- 在中序遍历的基础上，添加双向指针即可
+```c++
+/*
+struct TreeNode {
+	int val;
+	struct TreeNode *left;
+	struct TreeNode *right;
+	TreeNode(int x) :
+			val(x), left(NULL), right(NULL) {
+	}
+};*/
+class Solution {
+public:
+    TreeNode* pre = nullptr;
+    TreeNode* ret = nullptr; 
+    
+    TreeNode* Convert(TreeNode* pRootOfTree)
+    {
+        dfs(pRootOfTree);
+        return ret;
+    }
+    
+    void dfs(TreeNode* node){
+        if(node == nullptr)
+            return;
+        dfs(node->left);
+        
+        // 找到头节点，只操作一次
+        if(ret == nullptr)
+            ret = node;
+        
+        // 添加双向指针
+        if(pre != nullptr)
+            pre->right = node;
+        node->left = pre;
+        pre = node;
+        dfs(node->right);
+    }
+};
+```
+
+## 序列化二叉树
+> NowCoder/[序列化二叉树](https://www.nowcoder.com/practice/cf7e25aa97c04cc1a68c8f040e71fb84?tpId=13&tqId=11214&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+**描述**
+```
+请实现两个函数，分别用来序列化和反序列化二叉树。
+接口如下：
+  char* Serialize(TreeNode *root);
+  TreeNode* Deserialize(char *str);
+```
+```c++
+/*
+struct TreeNode {
+    int val;
+    struct TreeNode *left;
+    struct TreeNode *right;
+    TreeNode(int x) :
+            val(x), left(NULL), right(NULL) {
+    }
+};
+*/
+class Solution {
+    stringstream ss_serial;
+    stringstream ss_deserial;
+public:
+    char* Serialize(TreeNode *root) {    
+        dfs_serial(root);
+        char result[1024];
+        // str()用来取出字符串，c_str()用来转换成const* char;
+        return strcpy(result, ss_serial.str().c_str());
+    }
+    
+    void dfs_serial(TreeNode *root)
+    {
+        // 中序遍历
+        if(root == nullptr) {ss_serial << "#"; return;}
+        ss_serial << root->val ;
+        ss_serial << ",";
+        dfs_serial(root->left);
+        ss_serial << ",";
+        dfs_serial(root->right);
+    }
+    
+    TreeNode* Deserialize(char *str) {
+        if(strlen(str) < 1) return nullptr;
+        
+        ss_deserial << str;
+        return dfs_deserial();    
+    }
+    
+    TreeNode* dfs_deserial(){
+        if(ss_deserial.eof()) return nullptr;
+        
+        string val;
+        getline(ss_deserial, val, ',');
+
+        if(val == "#") return nullptr;
+        else
+        {
+            // stoi从字符转换成整数
+            TreeNode* node = new TreeNode{ stoi(val) };
+            node->left = dfs_deserial();
+            node->right = dfs_deserial();
+            return node;
+        }
+        
+    }
+};
+```
+
+## 字符串的排列
+> NowCoder/[字符串的排列](https://www.nowcoder.com/practice/fe6b651b66ae47d7acce78ffdd9a96c7?tpId=13&tqId=11180&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+**描述**
+```
+输入一个字符串,按字典序打印出该字符串中字符的所有排列。例如输入字符串abc,则打印出由字符a,b,c所能排列出来的所有字符串abc,acb,bac,bca,cab和cba。
+```
+```c++
+class Solution {
+    vector<string> ret;
+    string temp;
+    vector<int> used;
+    int length;
+    void dfs(const string& s, int step){
+        if(step == length){
+            ret.push_back(temp);
+            return;
+        }
+        
+        for(int i = 0; i < length; i++){
+            if(used[i])
+                continue;
+            // 注意重复, 重复值在对应位置只使用一次
+            if(!used[i - 1] && i > 0 && s[i-1] == s[i])
+                continue;
+            used[i] = 1;
+            temp[step] = s[i];
+            dfs(s, step + 1);
+            used[i] = 0;
+        }
+    }
+public:
+    vector<string> Permutation(string str) {
+        if(str.empty())
+            return ret;
+        sort(str.begin(), str.end());
+        length = str.size();
+        temp.resize(length, '\0');
+        used.resize(length, 0);
+        dfs(str, 0);
+        return ret;
+    }
+};
+```
+
+## 数组中超过一半的数字
+> NowCoder/[数组中超过一半的数字](https://www.nowcoder.com/practice/e8a1b01a2df14cb2b228b30ee6a92163?tpId=13&tqId=11181&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+**描述**
+```
+数组中有一个数字出现的次数超过数组长度的一半，请找出这个数字。例如输入一个长度为9的数组{1,2,3,2,2,2,5,4,2}。由于数字2在数组中出现了5次，超过数组长度的一半，因此输出2。如果不存在则输出0。
+```
+- hash
+- 多数投票算法
+1. 如果count==0，则将majority的值设置为数组的当前元素 count++；
+2. 如果count!=0，如果majority和现在数组元素值相同，则count++，反之count--；
+3. 重复上述两步，直到扫描完数组。
+4. count赋值为0，再次从头扫描数组，如果素组元素值与majority的值相同则count++，直到扫描完数组为止。
+5. 如果此时count的值大于等于n/2，则返回majority的值，反之则返回-1。
+
+```c++
+class Solution {
+public:
+    int MoreThanHalfNum_Solution(vector<int> numbers) {
+        unordered_map<int, int> m;
+        int n = numbers.size() / 2;
+        for(auto i : numbers){
+            m[i]++;
+            if(m[i] > n)
+                return i;
+        }
+        return 0;
+    }
+};
+```
+```c++
+class Solution {
+public:
+    int MoreThanHalfNum_Solution(vector<int> numbers) {
+        int count = 0;
+        int majority = 0;
+        for(auto i : numbers){
+            if(count == 0){
+                majority = i;
+                count++;
+            }
+            else{
+                if(majority == i)
+                    count++;
+                else
+                    count--;
+            }
+        }
+        
+        
+        count = 0;
+        for(auto i : numbers){
+            if(i == majority)
+                count++;
+            if(count > numbers.size()/2)
+                return majority;
+        }
+        return 0;
+    }
+};
+
+```
+
+## 数组中第k大的元素
+
+
+## 数字1的个数
+> NowCoder/[数字1的个数](https://www.nowcoder.com/practice/bd7f978302044eee894445e244c7eee6?tpId=13&tqId=11184&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+> LeetCode/[数字1的个数](https://leetcode-cn.com/problems/number-of-digit-one/submissions/)
+**描述**
+```
+求出1~13的整数中1出现的次数,并算出100~1300的整数中1出现的次数？为此他特别数了一下1~13中包含1的数字有1、10、11、12、13因此共出现6次,但是对于后面问题他就没辙了。ACMer希望你们帮帮他,并把问题更加普遍化,可以很快的求出任意非负整数区间中1出现的次数（从1 到 n 中1出现的次数）。
+```
+- 数学找规律题
+- 分位数讨论，某位上的1出现了多少次，比如90，则十位上的1出现了1次，个位上的出现了9次
+> LeetCode/[讨论区]/(https://leetcode.com/problems/number-of-digit-one/discuss/64381/4%2B-lines-O(log-n)-C%2B%2BJavaPython)
+
+```c++
+class Solution {
+public:
+    int countDigitOne(int n) {
+        int ret = 0;
+        for(long long m = 1; m <= n; m*=10){
+            auto a = n / m;
+            auto b = n % m;
+            ret += (a + 8) / 10 * m + (a % 10 == 1)*(b + 1); 
         }
         return ret;
     }

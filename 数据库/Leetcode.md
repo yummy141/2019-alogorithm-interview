@@ -12,6 +12,8 @@
 - [超过经理收入的员工](#超过经理收入的员工)
 - [查找重复的电子邮箱](#查找重复的电子邮箱)
 - [从不订购的客户](#从不订购的客户)
+- [部门中工资最高的员工](#部门中工资最高的员工)
+- [部门工资前三高的员工](#部门工资前三高的员工)
 
 <!-- /TOC -->
 ## 语法
@@ -96,6 +98,7 @@ END
 ```
 
 ## 分数排名
+- 对于`Score`一个分数，新开一个表，找出表中有多少个大于或等于该分数的不同的分数，然后按降序排列即可
 ```sql
 select Score, (select count(distinct score) from Scores where score >= s.Score) as Rank from Scores s order by Score desc; 
 ```
@@ -198,4 +201,50 @@ from Customers
 left join Orders on Orders.CustomerId = Customers.Id
 where Orders.CustomerId is NULL;
 
+```
+
+## 部门中工资最高的员工
+
+**描述**
+```
+Employee 表包含所有员工信息，每个员工有其对应的 Id, salary 和 department Id。
+
++----+-------+--------+--------------+
+| Id | Name  | Salary | DepartmentId |
++----+-------+--------+--------------+
+| 1  | Joe   | 70000  | 1            |
+| 2  | Henry | 80000  | 2            |
+| 3  | Sam   | 60000  | 2            |
+| 4  | Max   | 90000  | 1            |
++----+-------+--------+--------------+
+Department 表包含公司所有部门的信息。
+
++----+----------+
+| Id | Name     |
++----+----------+
+| 1  | IT       |
+| 2  | Sales    |
++----+----------+
+编写一个 SQL 查询，找出每个部门工资最高的员工。例如，根据上述给定的表格，Max 在 IT 部门有最高工资，Henry 在 Sales 部门有最高工资。
+
++------------+----------+--------+
+| Department | Employee | Salary |
++------------+----------+--------+
+| IT         | Max      | 90000  |
+| Sales      | Henry    | 80000  |
++------------+----------+--------+
+```
+```sql
+select d.name as Department, e.name as Employee, e.salary from Department d, Employee e where d.Id = e.DepartmentId and e.Salary = (select max(Salary) from Employee where DepartmentId = d.Id);
+```
+
+## 部门工资前三高的员工
+- 再建一个表，有点类似于嵌套循环的意思
+```sql
+# Write your MySQL query statement below
+select d.Name as Department, e.Name as Employee, e.Salary as Salary from Employee e, Department d 
+where e.DepartmentId = d.Id
+and (select count(distinct e2.salary) from Employee e2 
+where e2.DepartmentId = e.DepartmentId and e2.Salary > e.Salary) < 3
+order by e.DepartmentId, e.Salary DESC
 ```

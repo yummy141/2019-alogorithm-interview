@@ -1,67 +1,44 @@
-## 机器学习八个步骤
-1. 问题框架化，视野宏观化
-2. 获取数据
-- pd.read_csv() 返回DataFrame
-- @proerty
-    - .head()
-    - .info(), 看数据类型
-    - .describe(), 看数字属性摘要
-    - .hist() 画直方图，快速了解数据, 我们希望数据呈钟形分布，所以会resize，同时剔除掉一些极端值
-        > housing.hist(bins=50, figsize=(20,15))
-    - .value_counts() 看每一列里的分类数据
-- 创建并修改训练、验证、测试集
-    - from sklearn.model_selection import train_test_split
-        > train_set, test_set = train_test_split(housing, test_size=0.2, random_state=42)
-    - from sklearn.model_selection import StratifiedShuffleSplit
-        ```Python
-        # 分层随机拆分，相对就要复杂一些 
-        split = StratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state=42)  
-        for train_index, test_index in split.split(housing, housing["income_cat"]):
-            strat_train_set = housing.loc[train_index]
-            strat_test_set = housing.loc[test_index] 
-        ```
-    - 删除某个属性
-        > set_.drop("income_cat", axis=1, inplace=True)
-3. 探索数据以获得 深层次见解
-- @property
-    - .corr(),计算每对属性之间的标准相关性系数（也称为Pearson’s），并且可以继续.sort_values(ascending=False)排列相关性大小
-        - 或者pandas.plotting的 scatter_matrix函数
-            ```Python
-            attributes = ["median_house_value",
-              "median_income", 
-              "total_rooms",
-              "housing_median_age"]
-            scatter_matrix(housing[attributes], figsize=(12, 8))
-             ```
-- 组合特征    
-4. 准备数据以更好地将基础数据模式提供给机器学习算法
-- 注意编写函数以方便服用，同时数据集需要copy
-    ```Python
-    housing = strat_train_set.drop("median_house_value", axis=1)
-    housing_labels = strat_train_set["median_house_value"].copy()
-    ```
-- 数据清洗
-    - .dropna(subset=["..."]) 删除相应区域
-    - .drop() 删除整个属性
-    - .fillna(,inplace=True) 填补相应的值，需要计算一个值
-        - 补缺失值方法(from sklearn.preprocessing import Imputer)
-            -imputer 需要fit_transform
-- 处理文本和分类属性
-    - from sklearn.preprocessing import LabelEncoder
-    - from sklearn.preprocessing import OneHotEncoder
-    - from sklearn.preprocessing import LabelBinarizer
-        - 同样需要fit_transform(), 注意，返回的是array
-- 特征缩放
-    - from sklearn.preprocessing import StandardScaler
-5. 探索不同的模型并列出最优模型
-6. 微调模型并将它们组合成一个很好的解决方案
-7. 展示您的解决方案
-8. 运行，监控和维护您的系统 
+<!-- TOC -->
+
+- [array 转换成 dataframe](#array-%E8%BD%AC%E6%8D%A2%E6%88%90-dataframe)
+- [载入图像，并对数据规范化](#%E8%BD%BD%E5%85%A5%E5%9B%BE%E5%83%8F%E5%B9%B6%E5%AF%B9%E6%95%B0%E6%8D%AE%E8%A7%84%E8%8C%83%E5%8C%96)
+- [查找最优模型](#%E6%9F%A5%E6%89%BE%E6%9C%80%E4%BC%98%E6%A8%A1%E5%9E%8B)
+- [定制转换器](#%E5%AE%9A%E5%88%B6%E8%BD%AC%E6%8D%A2%E5%99%A8)
+- [Pipeline](#pipeline)
+- [交叉验证](#%E4%BA%A4%E5%8F%89%E9%AA%8C%E8%AF%81)
+- [Grid Search](#grid-search)
+- [Randomized Search](#randomized-search)
+- [机器学习八个步骤](#%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%85%AB%E4%B8%AA%E6%AD%A5%E9%AA%A4)
+
+<!-- /TOC -->
 
 ## array 转换成 dataframe
 ```Python   
 housing_tr = pd.DataFrame(X, columns=housing_num.columns,
                           index = list(housing.index.values))
+```
+
+## 载入图像，并对数据规范化
+```Python
+import PIL.Image as image
+def load_data(filePath):
+    # 读文件
+    f = open(filePath,'rb')
+    data = []
+    # 得到图像的像素值
+    img = image.open(f)
+    # 得到图像尺寸
+    width, height = img.size
+    for x in range(width):
+        for y in range(height):
+            # 得到点(x,y)的三个通道值
+            c1, c2, c3 = img.getpixel((x, y))
+            data.append([c1, c2, c3])
+    f.close()
+    # 采用Min-Max规范化
+    mm = preprocessing.MinMaxScaler()
+    data = mm.fit_transform(data)
+    return np.mat(data), width, height
 ```
 
 ## 查找最优模型
@@ -172,7 +149,7 @@ tree_rmse_scores = np.sqrt(-scores)
 
 ```
 
-# Grid Search
+## Grid Search
 ```Python
 from sklearn.model_selection import GridSearchCV
 
@@ -203,7 +180,7 @@ for mean_score, params in zip(cvres["mean_test_score"], cvres["params"]):
 pd.DataFrame(grid_search.cv_results_)
 ```
 
-# Randomized Search
+## Randomized Search
 ```Python
 from sklearn.model_selection import RandomizedSearchCV
 from scipy.stats import randint
@@ -222,3 +199,63 @@ cvres = rnd_search.cv_results_
 for mean_score, params in zip(cvres["mean_test_score"], cvres["params"]):
     print(np.sqrt(-mean_score), params)
 ```
+
+## 机器学习八个步骤
+1. 问题框架化，视野宏观化
+2. 获取数据
+- pd.read_csv() 返回DataFrame
+- @proerty
+    - .head()
+    - .info(), 看数据类型
+    - .describe(), 看数字属性摘要
+    - .hist() 画直方图，快速了解数据, 我们希望数据呈钟形分布，所以会resize，同时剔除掉一些极端值
+        > housing.hist(bins=50, figsize=(20,15))
+    - .value_counts() 看每一列里的分类数据
+- 创建并修改训练、验证、测试集
+    - from sklearn.model_selection import train_test_split
+        > train_set, test_set = train_test_split(housing, test_size=0.2, random_state=42)
+    - from sklearn.model_selection import StratifiedShuffleSplit
+        ```Python
+        # 分层随机拆分，相对就要复杂一些 
+        split = StratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state=42)  
+        for train_index, test_index in split.split(housing, housing["income_cat"]):
+            strat_train_set = housing.loc[train_index]
+            strat_test_set = housing.loc[test_index] 
+        ```
+    - 删除某个属性
+        > set_.drop("income_cat", axis=1, inplace=True)
+3. 探索数据以获得 深层次见解
+- @property
+    - .corr(),计算每对属性之间的标准相关性系数（也称为Pearson’s），并且可以继续.sort_values(ascending=False)排列相关性大小
+        - 或者pandas.plotting的 scatter_matrix函数
+            ```Python
+            attributes = ["median_house_value",
+              "median_income", 
+              "total_rooms",
+              "housing_median_age"]
+            scatter_matrix(housing[attributes], figsize=(12, 8))
+             ```
+- 组合特征    
+4. 准备数据以更好地将基础数据模式提供给机器学习算法
+- 注意编写函数以方便服用，同时数据集需要copy
+    ```Python
+    housing = strat_train_set.drop("median_house_value", axis=1)
+    housing_labels = strat_train_set["median_house_value"].copy()
+    ```
+- 数据清洗
+    - .dropna(subset=["..."]) 删除相应区域
+    - .drop() 删除整个属性
+    - .fillna(,inplace=True) 填补相应的值，需要计算一个值
+        - 补缺失值方法(from sklearn.preprocessing import Imputer)
+            -imputer 需要fit_transform
+- 处理文本和分类属性
+    - from sklearn.preprocessing import LabelEncoder
+    - from sklearn.preprocessing import OneHotEncoder
+    - from sklearn.preprocessing import LabelBinarizer
+        - 同样需要fit_transform(), 注意，返回的是array
+- 特征缩放
+    - from sklearn.preprocessing import StandardScaler
+5. 探索不同的模型并列出最优模型
+6. 微调模型并将它们组合成一个很好的解决方案
+7. 展示您的解决方案
+8. 运行，监控和维护您的系统 
