@@ -10,6 +10,8 @@
 - [箱线图](#箱线图)
 - [饼图](#饼图)
 - [sns.countplot显示一个数据表中的某一列数据里的成分](#snscountplot显示一个数据表中的某一列数据里的成分)
+- [sns.kdeplot显示连续分布](#snskdeplot显示连续分布)
+- [高级API: sns.catplot() (原来的factorplot已被淘汰)](#高级api-snscatplot-原来的factorplot已被淘汰)
 - [高阶](#高阶)
     - [热力图](#热力图)
     - [蜘蛛图](#蜘蛛图)
@@ -209,6 +211,17 @@ facet.set(xlim=(0, 200))
 facet.add_legend()
 ```
 <div align="center"><img src="../_image/kdeplot_fig1.png" width=""/></div>
+
+## 高级API: sns.catplot() (原来的factorplot已被淘汰)
+- 通过使用`kind`参数调用不同的画图函数
+- 参数`kind`：`point`默认，`bar`柱形图，`count`频次，`box`箱体，`violin`提琴，`strip`散点，`swarm`分散点
+```Python
+# Explore SibSp feature vs Survived(Titanic)
+g = sns.catplot(x="SibSp", y="Survived", data=train, kind="bar", palette = "muted")
+g.despine(left=True)
+g = g.set_ylabels("survival probability")
+```
+<div align="center"><img src="../_image/factorplot_fig1.png" width=""/></div>
 
 ## 高阶
 ### 热力图

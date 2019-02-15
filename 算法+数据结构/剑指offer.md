@@ -38,6 +38,7 @@
 - [字符串的排列](#字符串的排列)
 - [数组中超过一半的数字](#数组中超过一半的数字)
 - [数组中第k大的元素](#数组中第k大的元素)
+- [数据流中的中位数](#数据流中的中位数)
 - [数字1的个数](#数字1的个数)
 
 <!-- /TOC -->
@@ -1406,6 +1407,19 @@ class Solution {
     string temp;
     vector<int> used;
     int length;
+
+public:
+    vector<string> Permutation(string str) {
+        if(str.empty())
+            return ret;
+        sort(str.begin(), str.end());
+        length = str.size();
+        temp.resize(length, '\0');
+        used.resize(length, 0);
+        dfs(str, 0);
+        return ret;
+    }
+
     void dfs(const string& s, int step){
         if(step == length){
             ret.push_back(temp);
@@ -1423,17 +1437,6 @@ class Solution {
             dfs(s, step + 1);
             used[i] = 0;
         }
-    }
-public:
-    vector<string> Permutation(string str) {
-        if(str.empty())
-            return ret;
-        sort(str.begin(), str.end());
-        length = str.size();
-        temp.resize(length, '\0');
-        used.resize(length, 0);
-        dfs(str, 0);
-        return ret;
     }
 };
 ```
@@ -1506,34 +1509,29 @@ public:
 > LeetCode/[数组中的第K个最大元素](https://leetcode-cn.com/problems/kth-largest-element-in-an-array/description/)
 
 - 快排
+- 查找第K个为O(N)
+- 如果还要排序O(N+klogk)
+- In average, this algorithm reduces the size of the problem by approximately one half after each partition, giving the recurrence T(n) = T(n/2) + O(n) with O(n) being the time for partition. The solution is T(n) = O(n), which means we have found an average linear-time solution. However, in the worst case, the recurrence will become T(n) = T(n - 1) + O(n) and T(n) = O(n^2)
 ```c++
 // NowCoder
 class Solution {
-    vector<int> ret;
 public:
     vector<int> GetLeastNumbers_Solution(vector<int> input, int k) {
         if(k > input.size())
-            return ret;
-        ret.resize(k);
+            return vector<int>();
         quicksort(input, 0, input.size() - 1, k);
 
-        return ret;
+        return vector<int>(input.begin(), input.begin() + k);
     }
     
     void quicksort(vector<int>& input, int l, int r, int k)
     {
-        if(l >= r){
-            if(l >=0 && l < input.size() && l == r && l < k)
-                ret[l] = input[l];
+        if(l >= r)
             return;
-        }
             
         int index = partition(input, l, r);
         
-        if(index < k)
-            ret[index] = input[index];
-        
-        if(index > k)
+        if(index >= k)
             quicksort(input, l, index - 1, k);
         else{
             quicksort(input, l, index - 1, k);
@@ -1601,6 +1599,111 @@ public:
     }
 };
 ```
+- 堆
+- 直接根据a[0...k]建堆，时间复杂性为O(k)。遍历a[0...n-1]的时间复杂性为O(n)。找到比堆顶元素小的数后，进堆的时间复杂性为O(klogk)，出堆的时间复杂性为O(klogk)。输出有序的前k小的数的时间复杂性为O(klogk)，输出无序的前k小的数的时间复杂性为O(k)
+- 综合时间复杂度为O(N+klogk)
+- Nowcoder/小顶堆不优化
+```c++
+class Solution {
+public:
+    vector<int> GetLeastNumbers_Solution(vector<int> input, int k) {
+        if(k > input.size() || k <= 0 || input.empty())
+            return vector<int>();
+        if(k == input.size())
+            return input;
+        
+        priority_queue<int, vector<int>, greater<int> > q; 
+
+        for(auto i : input)
+            q.push(i);
+        
+        vector<int> ret;
+        for(int i = 0; i < k; i++){
+            ret.push_back(q.top());
+            q.pop();
+        }
+        
+        return ret;
+    }
+};
+```
+
+- Nowcoder/大顶堆优化
+```c++
+class Solution {
+public:
+    vector<int> GetLeastNumbers_Solution(vector<int> input, int k) {
+        if(k > input.size() || k <= 0 || input.empty())
+            return vector<int>();
+        if(k == input.size())
+            return input;
+        
+        priority_queue<int, vector<int> > q; // 大顶堆
+
+        for(int i = 0; i < input.size(); i++){
+            if(i >= k){ // 注意这里要加花括号，不然有歧义
+                if(input[i] < q.top()){
+                    q.pop();
+                    q.push(input[i]);
+                }
+               }
+            else
+                q.push(input[i]);
+        }
+        
+        vector<int> ret;
+        for(int i = 0; i < k; i++){
+            ret.push_back(q.top());
+            q.pop();
+        }
+
+        return ret;
+    }
+};
+```
+
+## 数据流中的中位数
+> NowCoder/[数据流中的中位数](https://www.nowcoder.com/practice/9be0172896bd43948f8a32fb954e1be1?tpId=13&tqId=11216&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+**描述**
+```
+如何得到一个数据流中的中位数？如果从数据流中读出奇数个数值，那么中位数就是所有数值排序之后位于中间的数值。如果从数据流中读出偶数个数值，那么中位数就是所有数值排序之后中间两个数的平均值。我们使用Insert()方法读取数据流，使用GetMedian()方法获取当前读取数据的中位数。
+```
+- 使用两个堆，一个大顶堆，一个小顶堆，大顶堆永远小于小顶堆，保持平衡，奇数个就放在大顶堆中多放一个。
+```c++
+class Solution {
+    priority_queue<int> big; 
+    priority_queue<int, vector<int>, greater<int> > small;
+    int N;
+public:
+    void Insert(int num)
+    {
+        N++;
+        if(N & 1){
+            small.push(num);
+            auto t = small.top();
+            small.pop();
+            big.push(t);
+        }
+        else{
+            big.push(num);
+            auto t = big.top();
+            big.pop();
+            small.push(t);
+        }
+    }
+
+    double GetMedian()
+    { 
+        if(N & 1)
+            return (double)big.top();
+        else
+            return (double)(small.top() + big.top())/2;
+    }
+
+};
+```
+
 ## 数字1的个数
 > NowCoder/[数字1的个数](https://www.nowcoder.com/practice/bd7f978302044eee894445e244c7eee6?tpId=13&tqId=11184&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
 > LeetCode/[数字1的个数](https://leetcode-cn.com/problems/number-of-digit-one/submissions/)

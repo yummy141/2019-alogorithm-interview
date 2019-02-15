@@ -3,6 +3,16 @@ python中，对象分为可变(mutable)和不可变(immutable)两种类型。
 
 元组（tuple)、数值型（number)、字符串(string)均为不可变对象，而字典型(dictionary)和列表型(list)的对象是可变对象。
 
+## Python 中 （&，|）和（and，or）之间的区别
+- example: a，b做运算
+  - 如果a,b是数值变量
+    - `& |`表示位运算
+    - `and or` 根据非0判断
+      - 注意 `1 and 2` 返回`2`
+  - 如果a,b是逻辑变量
+    - 则一致
+- 值得提及的是在DataFrame的切片过程，要注意逻辑变量的使用，
+  - 需要求得满足多个逻辑条件的数据时，要使用`&` 和`|`，在某些条件下用`and or`会报错`‘ValueError: The truth value of a Series is ambiguous. Use a.empty, a.bool(), a.item(), a.any() or a.all()`
 
 ##  Python paritial（）函数
 其实就是函数调用的时候，有多个参数，其中又有已知的参数，这样就可以重新定义一个函数

@@ -1,5 +1,7 @@
 <!-- TOC -->
 
+- [头文件](#%E5%A4%B4%E6%96%87%E4%BB%B6)
+- [去除warning](#%E5%8E%BB%E9%99%A4warning)
 - [array 转换成 dataframe](#array-%E8%BD%AC%E6%8D%A2%E6%88%90-dataframe)
 - [载入图像，并对数据规范化](#%E8%BD%BD%E5%85%A5%E5%9B%BE%E5%83%8F%E5%B9%B6%E5%AF%B9%E6%95%B0%E6%8D%AE%E8%A7%84%E8%8C%83%E5%8C%96)
 - [查找最优模型](#%E6%9F%A5%E6%89%BE%E6%9C%80%E4%BC%98%E6%A8%A1%E5%9E%8B)
@@ -11,6 +13,34 @@
 - [机器学习八个步骤](#%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%85%AB%E4%B8%AA%E6%AD%A5%E9%AA%A4)
 
 <!-- /TOC -->
+
+## 头文件
+```Python
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+%matplotlib inline
+
+from collections import Counter
+
+from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier, GradientBoostingClassifier, ExtraTreesClassifier, VotingClassifier
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+from sklearn.linear_model import LogisticRegression
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.neural_network import MLPClassifier
+from sklearn.svm import SVC
+from sklearn.model_selection import GridSearchCV, cross_val_score, StratifiedKFold, learning_curve
+
+sns.set(style='white', context='notebook', palette='deep')
+```
+
+## 去除warning
+```Python
+import warnings
+warnings.filterwarnings('ignore')
+```
 
 ## array 转换成 dataframe
 ```Python   
