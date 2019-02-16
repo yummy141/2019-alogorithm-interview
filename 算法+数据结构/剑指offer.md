@@ -33,6 +33,7 @@
 - [二叉搜索树的后序遍历序列](#二叉搜索树的后序遍历序列)
 - [二叉树中和为某一值的路径](#二叉树中和为某一值的路径)
 - [复杂链表的控制](#复杂链表的控制)
+- [平衡二叉树](#平衡二叉树)
 - [二叉搜索树与双向链表](#二叉搜索树与双向链表)
 - [序列化二叉树](#序列化二叉树)
 - [字符串的排列](#字符串的排列)
@@ -40,6 +41,9 @@
 - [数组中第k大的元素](#数组中第k大的元素)
 - [数据流中的中位数](#数据流中的中位数)
 - [数字1的个数](#数字1的个数)
+- [连续子数组的最大和](#连续子数组的最大和)
+- [把数组排成最小的数](#把数组排成最小的数)
+- [把数字翻译成字符串（解码方法）](#把数字翻译成字符串解码方法)
 
 <!-- /TOC -->
 ## 数组中重复的数字
@@ -1274,6 +1278,40 @@ public:
     }
 };
 ```
+## 平衡二叉树
+> NowCoder/[平衡二叉树](https://www.nowcoder.com/practice/8b3b95850edb4115918ecebdf1b4d222?tpId=13&tqId=11192&tPage=2&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
+
+**描述**
+```
+输入一棵二叉树，判断该二叉树是否是平衡二叉树。
+```
+- 注意要从下往上遍历，防止重复遍历
+```c++
+class Solution {
+public:
+    bool IsBalanced_Solution(TreeNode* pRoot) {
+         return Depth(pRoot) == -1 ? false : true;
+    }
+    
+    int Depth(TreeNode* pRoot){
+        if(pRoot == nullptr)
+            return 0;
+        
+        int left, right;
+        left = Depth(pRoot->left);
+        if(left == -1)
+            return -1;
+        right = Depth(pRoot->right);
+        if(right == -1)
+            return -1;
+        
+        if(abs(right - left) > 1)
+            return -1;
+        else
+            return max(right, left) + 1;
+    }
+};
+```
 
 ## 二叉搜索树与双向链表
 > NowCoder/[二叉搜索树与双向链表](https://www.nowcoder.com/practice/947f6eb80d944a84850b0538bf0ec3a5?tpId=13&tqId=11179&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
@@ -1728,4 +1766,84 @@ public:
         return ret;
     }
 };
+```
+
+## 连续子数组的最大和
+> NowCoder/[连续子数组的最大和](https://www.nowcoder.com/practice/459bd355da1549fa8a49e350bf3df484?tpId=13&tqId=11183&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+**描述**
+```
+{6,-3,-2,7,-15,1,2,2}，连续子数组的最大和为 8（从第 0 个开始，到第 3 个为止）
+```
+- O(N)算法，如果前缀和大于0则列入，否则丢弃
+- 注意有全负序列，初始化最好用第一个元素
+```
+class Solution {
+public:
+    int FindGreatestSumOfSubArray(vector<int> array) {
+        if(array.size() == 0) 
+            return int();
+        
+        int sum = array[0];
+        int ret = array[0];
+        for(int i = 1; i < array.size(); i++){
+            if(sum < 0)
+                sum = array[i];
+            else
+                sum += array[i];
+            
+            if(sum > ret)
+                ret = sum;
+        }
+        
+        return ret;
+    }
+};
+```
+
+
+## 把数组排成最小的数
+> NowCoder/[把数组排成最小的数](https://www.nowcoder.com/practice/8fecd3f8ba334add803bf2a06af1b993?tpId=13&tqId=11185&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+**描述**
+```
+输入一个正整数数组，把数组里所有数字拼接起来排成一个数，打印能拼接出的所有数字中最小的一个。例如输入数组{3，32，321}，则打印出这三个数字能排成的最小数字为321323。
+```
+- 运用排序算法，定义`cmp`
+- c++中将数字转换成字符串
+  - `to_string()`
+```c++
+class Solution {
+public:
+    string PrintMinNumber(vector<int> numbers) {
+        sort(numbers.begin(), numbers.end(), [](const int& l, const int& r){
+           return to_string(l) + to_string(r) < to_string(r) + to_string(l);             
+        });
+        
+        stringstream ss;
+        for(auto i : numbers)
+            ss<<to_string(i);
+        return ss.str();
+    }
+};
+```
+
+## 把数字翻译成字符串（解码方法）
+> LeetCode/[解码方法](https://leetcode-cn.com/problems/decode-ways/description/)
+
+**描述**
+```
+一条包含字母 A-Z 的消息通过以下方式进行了编码：
+
+'A' -> 1
+'B' -> 2
+...
+'Z' -> 26
+给定一个只包含数字的非空字符串，请计算解码方法的总数。
+
+示例 1:
+
+输入: "12"
+输出: 2
+解释: 它可以解码为 "AB"（1 2）或者 "L"（12）。
 ```
