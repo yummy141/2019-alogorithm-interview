@@ -44,6 +44,12 @@
 - [连续子数组的最大和](#连续子数组的最大和)
 - [把数组排成最小的数](#把数组排成最小的数)
 - [把数字翻译成字符串（解码方法）](#把数字翻译成字符串解码方法)
+- [礼物的最大价值](#礼物的最大价值)
+- [丑数](#丑数)
+- [丑数II](#丑数ii)
+- [第一个只出现一次的字符](#第一个只出现一次的字符)
+- [字符流中第一个只出现一次的字符](#字符流中第一个只出现一次的字符)
+- [翻转单词序列](#翻转单词序列)
 
 <!-- /TOC -->
 ## 数组中重复的数字
@@ -1830,6 +1836,7 @@ public:
 
 ## 把数字翻译成字符串（解码方法）
 > LeetCode/[解码方法](https://leetcode-cn.com/problems/decode-ways/description/)
+> 题解：bilibili/[花花酱](https://www.bilibili.com/video/av42112212)
 
 **描述**
 ```
@@ -1847,3 +1854,250 @@ public:
 输出: 2
 解释: 它可以解码为 "AB"（1 2）或者 "L"（12）。
 ```
+- 动态规划
+- dp[i]: ways to decode s[0]....s[i]
+- dp[i] = dp[i-1] if(s[i]合法) else 0 + dp[i-1] if(s[i-1, i]合法) else 0 
+- 另外，如果都不合法，则直接返回0
+- 其中一位数如果为0不合法，其他合法， 两位数必须在[10，26]范围内才合法；
+```c++
+class Solution {
+public:
+    int numDecodings(string s) {
+        int n = s.size();
+        if(n <= 0 || s[0] == '0') 
+            return 0;
+        if(n == 1) 
+            return 1;
+
+        int prefix1;
+        int prefix2 = (s[0] - '0')*10 + (s[1] - '0'); 
+        vector<int> dp(n, 0);
+        dp[0] = isValid_1(s[0] - '0');
+        dp[1] = isValid_1(s[1] - '0') + isValid_2(prefix2);
+        
+        if(dp[1] == 0)
+            return 0;
+        for(int i = 2; i < n; i++){
+            prefix1 = s[i] - '0';
+            prefix2 = (s[i - 1] - '0')*10 + (s[i] - '0'); 
+            dp[i] += (isValid_1(prefix1)) * dp[i - 1];
+            dp[i] += (isValid_2(prefix2)) * dp[i - 2];
+            if(dp[i] == 0)
+                return 0;
+        }
+        return dp[n - 1];
+    }
+    
+    int isValid_1(int n){
+        if(n == 0)
+            return 0;
+        else
+            return 1;
+    }
+    int isValid_2(int n){
+        if(n >= 10 && n <= 26)
+            return 1;
+        else
+            return 0;
+    }
+    
+};
+```
+
+## 礼物的最大价值
+> NowCoder/[牛客网](https://www.nowcoder.com/questionTerminal/72a99e28381a407991f2c96d8cb238ab)
+
+**描述**
+```
+在一个 m*n 的棋盘的每一个格都放有一个礼物，每个礼物都有一定价值（大于 0）。
+从左上角开始拿礼物，每次向右或向下移动一格，直到右下角结束。
+给定一个棋盘，求拿到礼物的最大价值。例如，对于如下棋盘
+    1    10   3    8
+    12   2    9    6
+    5    7    4    11
+    3    7    16   5
+礼物的最大价值为 1+12+5+7+7+16+5=53。
+```
+- dp[i, j]代表经过[i, j]的礼物最大值
+- dp[i, j] = max(dp[i-1, j], dp[i, j-1]) + board[i, j]
+```c++
+class Bonus {
+public:
+    int getMost(vector<vector<int> > board) {
+        if(board[0].size()<=0 || board.size() <= 0)
+            return 0;
+        int n = board.size();
+        int m = board[0].size();
+        
+        vector<vector<int> > dp(n, vector<int>(m, 0));
+        
+        for(int i = 0; i < n; i++)
+            for(int j = 0; j < m; j++){
+                int a = 0;
+                int b = 0;
+                if(i - 1 >= 0)
+                    a = dp[i - 1][j];
+                if(j - 1 >= 0)
+                    b = dp[i][j - 1];
+                dp[i][j] = max(a, b) + board[i][j];
+            }
+        return dp[n - 1][m - 1];
+    }
+};
+```
+
+## 丑数
+> LeetCode/[丑数](https://leetcode-cn.com/problems/ugly-number/)
+
+**描述**
+```
+编写一个程序判断给定的数是否为丑数
+```
+- 注意边界判断，尤其num=0的情况
+```c++
+class Solution {
+public:
+    bool isUgly(int num) {
+        if(num <= 0)
+            return false;
+        while(num%2 == 0) num /= 2;
+        while(num%3 == 0) num /= 3;
+        while(num%5 == 0) num /= 5;
+        return num==1;
+    }
+};
+```
+
+
+## 丑数II
+> NowCoder/[丑数]()
+> LeetCode/[丑数II](https://leetcode-cn.com/problems/ugly-number-ii/submissions/)
+> bilibili/[花花酱](https://www.bilibili.com/video/av31571137)
+
+**描述**
+```
+把只包含质因子2、3和5的数称作丑数（Ugly Number）。例如6、8都是丑数，但14不是，因为它包含质因子7。 习惯上我们把1当做是第一个丑数。求按从小到大的顺序的第N个丑
+```
+- 三指针记录上一次乘以对应质因子的位置，然后排序
+- c++11中可以使用初始化列表传入`min`函数
+  - `min({x, y, z})`
+```
+class Solution {
+public:
+    int nthUglyNumber(int n) {
+        vector<int> nums{1};
+        int index2 = 0;
+        int index3 = 0;
+        int index5 = 0;
+        for(int i = 1; i < n; i++){
+            int next2 = 2 * nums[index2];
+            int next3 = 3 * nums[index3];
+            int next5 = 5 * nums[index5];
+            
+            nums.push_back(min({next2, next3, next5}));
+            if(nums[i] == next2)
+                index2++;
+            if(nums[i] == next3)
+                index3++;
+            if(nums[i] == next5)
+                index5++;
+        }
+        return nums[n-1];
+    }
+};
+
+```
+
+## 第一个只出现一次的字符
+> NowCoder/[第一个只出现一次的字符](https://www.nowcoder.com/practice/1c82e8cf713b4bbeb2a5b31cf5b0417c?tpId=13&tqId=11187&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+**描述**
+```
+在一个字符串(0<=字符串长度<=10000，全部由字母组成)中找到第一个只出现一次的字符,并返回它的位置, 如果没有则返回 -1（需要区分大小写)
+```
+- Hash
+- 判断一个元素是否字hash表中
+  - `m.find(i) == m.end()`
+    - find返回迭代值
+    - 返回值->first 是key, 返回值->second 是value
+  - `m.count(i) == 0`
+```c++
+class Solution {
+public:
+    int FirstNotRepeatingChar(string str) {
+        unordered_map<char, int> m;
+        for(auto i : str){
+            if(m.find(i) == m.end())
+                m[i] = 1;
+            else
+                m[i]++;
+        }
+        
+        for(int i = 0; i < str.size(); i++)
+            if(m[str[i]] == 1)
+                return i;
+        
+        return -1;
+    }
+};
+```
+## 字符流中第一个只出现一次的字符
+> NowCoder/[字符流中第一个只出现一次的字符](https://www.nowcoder.com/practice/00de97733b8e4f97a3fb5c680ee10720?tpId=13&tqId=11207&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+**描述**
+```
+请实现一个函数用来找出字符流中第一个只出现一次的字符。例如，当从字符流中只读出前两个字符"go"时，第一个只出现一次的字符是"g"。当从该字符流中读出前六个字符“google"时，第一个只出现一次的字符是"l"。
+```
+- hash
+- 利用队列，每次插入时入队
+  - 当队首元素已经重复出现时，弹出队首
+  - 则队首元素就是第一个只出现一次的字符
+```c++
+class Solution
+{
+public:
+    unordered_map<char, int> m;
+    queue<char> q;
+    void Insert(char ch)
+    {
+        if(m.count(ch)==0)
+            m[ch] = 1;
+        else
+            m[ch]++;
+        q.push(ch);
+        while(!q.empty() && m[q.front()] > 1)
+            q.pop();
+    }
+  //return the first appearence once char in current stringstream
+    char FirstAppearingOnce()
+    {
+        return q.empty() ? '#' : q.front();
+    }
+
+};
+```
+
+## 翻转单词序列
+> NowCoder/[翻转单词序列](https://www.nowcoder.com/practice/3194a4f4cf814f63919d0790578d51f3?tpId=13&tqId=11197&tPage=3&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
+
+**描述**
+```
+牛客最近来了一个新员工Fish，每天早晨总是会拿着一本英文杂志，写些句子在本子上。同事Cat对Fish写的内容颇感兴趣，有一天他向Fish借来翻看，但却读不懂它的意思。例如，“student. a am I”。后来才意识到，这家伙原来把句子单词的顺序翻转了，正确的句子应该是“I am a student.”。Cat对一一的翻转这些单词顺序可不在行，你能帮助他么？
+```
+```c++
+class Solution {
+public:
+    string ReverseSentence(string str) {
+        string res="", temp="";
+        for(int i = 0 ;i < str.size(); i++){
+            if(str[i] == ' ')
+                res = " " + temp + res, temp = ""; 
+            else
+                temp += str[i];
+        }
+        if(temp.size())
+            res = temp + res;
+        return res;
+    }
+};
+```
+
