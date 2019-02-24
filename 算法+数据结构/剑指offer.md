@@ -2101,3 +2101,25 @@ public:
 };
 ```
 
+## 不用加减乘除做加法
+> NowCoder/[不用加减乘除做加法](https://www.nowcoder.com/practice/59ac416b4b944300b617d4f7f111b215?tpId=13&tqId=11201&tPage=3&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
+
+- 位运算
+- 先用`^`找到去除进位的sum值
+- 再用`&`找到进位
+- 不停循环
+```c++
+class Solution {
+public:
+    int Add(int num1, int num2)
+    {
+        while(num2 != 0){
+            int sum = num1 ^ num2;
+            int carry = (num1 & num2) << 1;
+            num1 = sum;
+            num2 = carry;
+        }
+        return num1;
+    }
+};
+```
