@@ -50,6 +50,7 @@
 - [第一个只出现一次的字符](#第一个只出现一次的字符)
 - [字符流中第一个只出现一次的字符](#字符流中第一个只出现一次的字符)
 - [翻转单词序列](#翻转单词序列)
+- [不用加减乘除做加法](#不用加减乘除做加法)
 
 <!-- /TOC -->
 ## 数组中重复的数字
@@ -1556,6 +1557,7 @@ public:
 - 查找第K个为O(N)
 - 如果还要排序O(N+klogk)
 - In average, this algorithm reduces the size of the problem by approximately one half after each partition, giving the recurrence T(n) = T(n/2) + O(n) with O(n) being the time for partition. The solution is T(n) = O(n), which means we have found an average linear-time solution. However, in the worst case, the recurrence will become T(n) = T(n - 1) + O(n) and T(n) = O(n^2)
+- 高频面试题
 ```c++
 // NowCoder
 class Solution {
@@ -1585,7 +1587,7 @@ public:
     
     int partition(vector<int>& input, int l, int r){
         int i = l;
-        int base = rand() % (r - l + 1) + l; 
+        int base = rand() % (r - l + 1) + l; // rand返回的是[0, 最大随机数]
         int pivot  = input[base];
         swap(input[base], input[r]);
         for(int j = l; j < r; j++){
