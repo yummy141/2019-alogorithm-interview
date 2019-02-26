@@ -31,6 +31,7 @@
 - [把二叉树打印成多行](#把二叉树打印成多行)
 - [按之字形顺序打印二叉树](#按之字形顺序打印二叉树)
 - [二叉搜索树的后序遍历序列](#二叉搜索树的后序遍历序列)
+- [二叉搜索树的第k个结点](#二叉搜索树的第k个结点)
 - [二叉树中和为某一值的路径](#二叉树中和为某一值的路径)
 - [复杂链表的控制](#复杂链表的控制)
 - [平衡二叉树](#平衡二叉树)
@@ -49,8 +50,10 @@
 - [丑数II](#丑数ii)
 - [第一个只出现一次的字符](#第一个只出现一次的字符)
 - [字符流中第一个只出现一次的字符](#字符流中第一个只出现一次的字符)
+- [替换空格](#替换空格)
 - [翻转单词序列](#翻转单词序列)
 - [不用加减乘除做加法](#不用加减乘除做加法)
+- [扑克牌顺子](#扑克牌顺子)
 
 <!-- /TOC -->
 ## 数组中重复的数字
@@ -91,12 +94,11 @@ public:
 ```
 
 ## 二维数组中的查找
-**题目描述**
 
+**描述**
 ```
 在一个二维数组中（每个一维数组的长度相同），每一行都按照从左到右递增的顺序排序，每一列都按照从上到下递增的顺序排序。请完成一个函数，输入这样的一个二维数组和一个整数，判断数组中是否含有该整数。
 ```
-
 ```c++
 class Solution {
 public:
@@ -469,6 +471,7 @@ public:
 
 ## 整数拆分(动态规划|贪心)
 > LeetCode/[整数拆分](https://leetcode-cn.com/problems/integer-break/submissions/)
+> NowCoder/剪绳子
 
 **描述**
 ```
@@ -496,7 +499,7 @@ f(5)=2*3=6
 f(6)=3*3=9
 f(7)=2*2*3=12
 注意到，不会出现大于3的因子，如4、5等，如果有4则可拆成2*2，有5则可拆成2*3，因此可以贪心去找最多的3，但不要出现1。
-而动规的转移方程为dp[n]=max{dp[n-2]*2, dp[n-3]*3, 2*(n-2), 3*(n-3)}, 之所以后两项是因为dp[2]和dp[3]会出现1，这不是我们想要的情况。
+而动规的转移方程为dp[n]=max{dp[n-2]*2, dp[n-3]*3, 2*(n-2), 3*(n-3)}, 之所以后两项是因为dp[2]和dp[3]会出现1(至少要分成两个整数)，这不是我们想要的情况。
 ```
 ```c++
 class Solution {
@@ -550,12 +553,12 @@ public:
         int p = abs(exponent);
         double ret = 1.0;
         while(p > 0){
-            if(p & 1){
+            if(p & 1){  // 如果p是奇数
                ret *= base;
                p--;
             }
                 
-            base *= base;
+            base *= base; 
             p >>= 1;
         }
         return exponent > 0 ? ret : 1/ret;
@@ -1181,6 +1184,54 @@ public:
         }
         
         return dfs(s, l, mid) && dfs(s, mid, r-1);
+    }
+};
+```
+
+## 二叉搜索树的第k个结点
+> NowCoder/[二叉搜索树的第k个结点](https://www.nowcoder.com/practice/ef068f602dde4d28aab2b210e859150a?tpId=13&tqId=11215&tPage=4&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
+
+**描述**
+```
+给定一棵二叉搜索树，请找出其中的第k小的结点。例如， （5，3，7，2，4，6，8）    中，按结点数值大小顺序第三小结点的值为4。
+```
+- 思路：二叉搜索树按照中序遍历的顺序打印出来正好就是排序好的顺序。所以，按照中序遍历顺序找到第k个结点就是结果。
+```c++
+class Solution {
+    vector<TreeNode*> res;
+public:
+    TreeNode* KthNode(TreeNode* pRoot, int k)
+    {    
+        if(pRoot == nullptr || k <= 0)
+            return nullptr;
+        dfs(pRoot);
+        return k <= res.size() ? res[k-1] : nullptr;
+    }
+    
+    void dfs(TreeNode* t){
+        if(t == nullptr) return;
+        dfs(t->left);
+        res.push_back(t);
+        dfs(t->right);
+    }
+    
+};
+```
+- 精简版
+```c++
+class Solution {
+    int t = 0;
+public:
+    TreeNode* KthNode(TreeNode* pRoot, int k)
+    {    
+        if(pRoot){
+            auto node = KthNode(pRoot->left, k);
+            if(node) return node; // 如果返回值不为nullptr,说明已经找到第k小的结点，直接返回这个结点
+            if(++t == k) return pRoot;
+            node = KthNode(pRoot->right, k);
+            if(node) return node;
+        }
+        return nullptr; // 注意正常中序遍历是没有返回值的，这里返回nullptr
     }
 };
 ```
@@ -1972,18 +2023,18 @@ public:
 
 
 ## 丑数II
-> NowCoder/[丑数]()
-> LeetCode/[丑数II](https://leetcode-cn.com/problems/ugly-number-ii/submissions/)
+> NowCoder/[丑数](https://www.nowcoder.com/practice/6aa9e04fc3794f68acf8778237ba065b?tpId=13&tqId=11186&tPage=2&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)  
+> LeetCode/[丑数II](https://leetcode-cn.com/problems/ugly-number-ii/submissions/)  
 > bilibili/[花花酱](https://www.bilibili.com/video/av31571137)
 
 **描述**
 ```
-把只包含质因子2、3和5的数称作丑数（Ugly Number）。例如6、8都是丑数，但14不是，因为它包含质因子7。 习惯上我们把1当做是第一个丑数。求按从小到大的顺序的第N个丑
+把只包含质因子2、3和5的数称作丑数（Ugly Number）。例如6、8都是丑数，但14不是，因为它包含质因子7。 习惯上我们把1当做是第一个丑数。求按从小到大的顺序的第N个丑数
 ```
 - 三指针记录上一次乘以对应质因子的位置，然后排序
 - c++11中可以使用初始化列表传入`min`函数
   - `min({x, y, z})`
-```
+```c++
 class Solution {
 public:
     int nthUglyNumber(int n) {
@@ -2061,7 +2112,7 @@ public:
     queue<char> q;
     void Insert(char ch)
     {
-        if(m.count(ch)==0)
+        if(m.count(ch) == 0)
             m[ch] = 1;
         else
             m[ch]++;
@@ -2078,6 +2129,42 @@ public:
 };
 ```
 
+## 替换空格
+> NowCoder/[替换空格](https://www.nowcoder.com/practice/4060ac7e3e404ad1a894ef3e17650423?tpId=13&tqId=11155&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+**描述**
+```
+请实现一个函数，将一个字符串中的每个空格替换成“%20”。例如，当字符串为We Are Happy.则经过替换之后的字符串为We%20Are%20Happy。
+```
+```c++
+class Solution {
+public:
+	void replaceSpace(char *str,int length) {
+        if(str == nullptr || length < 0)
+            return;
+        unsigned int t = 0;
+        for(int i = 0; i < length; i++){
+            if(str[i] == ' ')
+                t++;
+        }
+        
+        t *= 2;
+        int n = length + t;
+        str[n--] = '\0';
+        for(int i = length - 1; i >= 0; i--){
+            if(str[i] == ' '){
+                str[n--] = '0';
+                str[n--] = '2';
+                str[n--] = '%';
+            }
+            else
+                str[n--] = str[i];
+        }
+	}
+};
+```
+
+
 ## 翻转单词序列
 > NowCoder/[翻转单词序列](https://www.nowcoder.com/practice/3194a4f4cf814f63919d0790578d51f3?tpId=13&tqId=11197&tPage=3&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
 
@@ -2090,7 +2177,7 @@ class Solution {
 public:
     string ReverseSentence(string str) {
         string res="", temp="";
-        for(int i = 0 ;i < str.size(); i++){
+        for(int i = 0; i < str.size(); i++){
             if(str[i] == ' ')
                 res = " " + temp + res, temp = ""; 
             else
@@ -2122,6 +2209,38 @@ public:
             num2 = carry;
         }
         return num1;
+    }
+};
+```
+
+## 扑克牌顺子
+> NowCoder/[扑克牌顺子](https://www.nowcoder.com/practice/762836f4d43d43ca9deb273b3de8e1f4?tpId=13&tqId=11198&tPage=3&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
+
+**描述**
+```
+LL今天心情特别好,因为他去买了一副扑克牌,发现里面居然有2个大王,2个小王(一副牌原本是54张^_^)...他随机从中抽出了5张牌,想测测自己的手气,看看能不能抽到顺子,如果抽到的话,他决定去买体育彩票,嘿嘿！！“红心A,黑桃3,小王,大王,方片5”,“Oh My God!”不是顺子.....LL不高兴了,他想了想,决定大\小 王可以看成任何数字,并且A看作1,J为11,Q为12,K为13。上面的5张牌就可以变成“1,2,3,4,5”(大小王分别看作2和4),“So Lucky!”。LL决定去买体育彩票啦。 现在,要求你使用这幅牌模拟上面的过程,然后告诉我们LL的运气如何， 如果牌能组成顺子就输出true，否则就输出false。为了方便起见,你可以认为大小王是0。
+```
+- hash判断对子
+- 记录除大王和小王的差，如果差小于5，则返回true
+```c++
+class Solution {
+public:
+    bool IsContinuous( vector<int> numbers ) {
+        if(numbers.size() != 5)
+            return false;
+        int maxN = -1;
+        int minN = 14;
+        int m[14]={0};
+        for(int i = 0; i < 5; i++){
+            if(numbers[i] == 0) continue;
+            m[numbers[i]]++;
+            if(m[numbers[i]] >= 2) return false;
+            maxN = max(maxN, numbers[i]);
+            minN = min(minN, numbers[i]);
+        } 
+        if(maxN - minN < 5)
+            return true;
+        return false;
     }
 };
 ```
