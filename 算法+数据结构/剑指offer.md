@@ -1454,7 +1454,7 @@ public:
     
     void dfs_serial(TreeNode *root)
     {
-        // 中序遍历
+        // 先序遍历
         if(root == nullptr) {ss_serial << "#"; return;}
         ss_serial << root->val ;
         ss_serial << ",";
