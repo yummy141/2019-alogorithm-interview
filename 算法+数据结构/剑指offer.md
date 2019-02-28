@@ -1003,15 +1003,6 @@ public:
 ```
 - 用队列来实现
 ```c++
-/*
-struct TreeNode {
-	int val;
-	struct TreeNode *left;
-	struct TreeNode *right;
-	TreeNode(int x) :
-			val(x), left(NULL), right(NULL) {
-	}
-};*/
 class Solution {
 public:
     vector<int> PrintFromTopToBottom(TreeNode* root) {
@@ -1044,16 +1035,6 @@ public:
 - 多加入两个变量`curL`和`nexL`分别记录当前行/下一行要打印的数值，当`curL`为零时交换
 - 利用额外的`temp`动态数组，每一行每一行地加入`ret`返回数组中
 ```c++
-/*
-struct TreeNode {
-    int val;
-    struct TreeNode *left;
-    struct TreeNode *right;
-    TreeNode(int x) :
-            val(x), left(NULL), right(NULL) {
-    }
-};
-*/
 class Solution {
 public:
         vector<vector<int> > Print(TreeNode* pRoot) {

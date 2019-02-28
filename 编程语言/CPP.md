@@ -23,6 +23,9 @@
 - [new int(10) 和 new int[10]](#new-int10-和-new-int10)
 - [c++ 11 lambda表达式](#c-11-lambda表达式)
 - [const和指针](#const和指针)
+- [智能指针](#智能指针)
+- [new和malloc的区别](#new和malloc的区别)
+- [引用和指针的区别](#引用和指针的区别)
 
 <!-- /TOC -->
 
@@ -233,3 +236,12 @@ int * const p3;
      Animal b = a;
 
      这里却是就是生成了两个对象。
+
+## new和malloc的区别
+> CSDN/[new和malloc的区别](https://www.cnblogs.com/QG-whz/p/5140930.html#_label1_0)
+
+## 引用和指针的区别
+1. 引用不可以为空但指针可以为空
+2. 引用不可以改变指向，指针可以
+3. 引用的大小是所指变量的大小，而指针是指针本身大小
+4. 引用比指针更安全
