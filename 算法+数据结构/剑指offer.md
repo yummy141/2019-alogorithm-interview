@@ -152,7 +152,8 @@ public:
 ```
 
 ## 重建二叉树
->[Nowcoder](https://www.nowcoder.com/practice/8a19cbe657394eeaac2f6ea9b0f6fcf6?tpId=13&tqId=11157&tPage=1&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
+> Nowcoder/[重建二叉树](https://www.nowcoder.com/practice/8a19cbe657394eeaac2f6ea9b0f6fcf6?tpId=13&tqId=11157&tPage=1&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
+
 **示例**
 ```
 前序
@@ -175,23 +176,15 @@ public:
   右子树的根节点 3
   ...
 ```
-
+- pre.begin() + i 等价于 pre[i]
+- pre.end() 等价于 pre[n]
 - 这个方法比较浪费空间，传数组引用会更好
 ```c++
-/**
- * Definition for binary tree
- * struct TreeNode {
- *     int val;
- *     TreeNode *left;
- *     TreeNode *right;
- *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
- * };
- */
 class Solution {
 public:
     TreeNode* reConstructBinaryTree(vector<int> pre,vector<int> vin) {
         if(pre.size() <= 0)
-            return NULL;
+            return nullptr;
         
         TreeNode* t = new TreeNode{ pre[0] };
         for(int i = 0; i < pre.size(); i++){
@@ -229,17 +222,6 @@ public:
         - 如果没有右子树
             - 则可当成叶节点处理
 ```c++
-/*
-struct TreeLinkNode {
-    int val;
-    struct TreeLinkNode *left;
-    struct TreeLinkNode *right;
-    struct TreeLinkNode *next;
-    TreeLinkNode(int x) :val(x), left(NULL), right(NULL), next(NULL) {
-        
-    }
-};
-*/
 class Solution {
 public:
     TreeLinkNode* GetNext(TreeLinkNode* pNode){
@@ -577,15 +559,6 @@ public:
 - 注意删除一个指针后要指向`NULL`
     - 原因是`delete`只释放指针指向的内存，但指针仍然指向这块内存
 ```c++
-/*
-struct ListNode {
-    int val;
-    struct ListNode *next;
-    ListNode(int x) :
-        val(x), next(NULL) {
-    }
-};
-*/
 class Solution {
 public:
     ListNode* deleteDuplication(ListNode* pHead)
@@ -655,14 +628,6 @@ public:
 ```
 - 快慢指针
 ```c++
-/*
-struct ListNode {
-	int val;
-	struct ListNode *next;
-	ListNode(int x) :
-			val(x), next(NULL) {
-	}
-};*/
 class Solution {
 public:
     ListNode* FindKthToTail(ListNode* pListHead, unsigned int k) {
@@ -698,15 +663,6 @@ public:
 - 设置快慢指针，快指针每次走两步，慢指针每次走一步，等它们相遇后。相遇后，将一指针指向头指针，然后两个指针同时向前（步长为一步），再次相遇即为入口。
 > 证明参考:牛客网/[讨论区](https://www.nowcoder.com/questionTerminal/253d2c59ec3e4bc68da16833f79a38e4)
 ```c++
-/*
-struct ListNode {
-    int val;
-    struct ListNode *next;
-    ListNode(int x) :
-        val(x), next(NULL) {
-    }
-};
-*/
 class Solution {
 public:
     ListNode* EntryNodeOfLoop(ListNode* pHead)
@@ -740,14 +696,6 @@ public:
 ```
 - 三指针
 ```c++
-/*
-struct ListNode {
-	int val;
-	struct ListNode *next;
-	ListNode(int x) :
-			val(x), next(NULL) {
-	}
-};*/
 class Solution {
 public:
     ListNode* ReverseList(ListNode* pHead) {
@@ -829,15 +777,6 @@ public:
 ```
 
 ```c++
-/*
-struct TreeNode {
-	int val;
-	struct TreeNode *left;
-	struct TreeNode *right;
-	TreeNode(int x) :
-			val(x), left(NULL), right(NULL) {
-	}
-};*/
 class Solution {
 public:
     void Mirror(TreeNode *pRoot) {
@@ -859,16 +798,6 @@ public:
 请实现一个函数，用来判断一颗二叉树是不是对称的。注意，如果一个二叉树同此二叉树的镜像是同样的，定义其为对称的。
 ```
 ```c++
-/*
-struct TreeNode {
-    int val;
-    struct TreeNode *left;
-    struct TreeNode *right;
-    TreeNode(int x) :
-            val(x), left(NULL), right(NULL) {
-    }
-};
-*/
 class Solution {
 public:
     bool isSymmetrical(TreeNode* pRoot)
@@ -1337,7 +1266,7 @@ public:
             return 0;
         
         int left, right;
-        left = Depth(pRoot->left);
+        left = Depth(pRoot->left); // 注意不能在这加1，否则返回值为0
         if(left == -1)
             return -1;
         right = Depth(pRoot->right);
