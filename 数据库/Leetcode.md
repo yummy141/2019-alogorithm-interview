@@ -14,6 +14,11 @@
 - [从不订购的客户](#从不订购的客户)
 - [部门中工资最高的员工](#部门中工资最高的员工)
 - [部门工资前三高的员工](#部门工资前三高的员工)
+- [大的国家](#大的国家)
+- [交换工资](#交换工资)
+- [有趣的电影](#有趣的电影)
+- [超过五名学生的课](#超过五名学生的课)
+- [删除重复的电子邮箱](#删除重复的电子邮箱)
 
 <!-- /TOC -->
 ## 语法
@@ -247,4 +252,29 @@ where e.DepartmentId = d.Id
 and (select count(distinct e2.salary) from Employee e2 
 where e2.DepartmentId = e.DepartmentId and e2.Salary > e.Salary) < 3
 order by e.DepartmentId, e.Salary DESC
+```
+
+## 大的国家
+```sql
+select name, population, area from World where population > 25000000 or area > 3000000;
+```
+
+## 交换工资
+```sql
+update salary set sex = if(sex = 'm','f','m');
+```
+
+## 有趣的电影
+```sql
+select id, movie, description, rating from cinema where id % 2 != 0 and  description != 'boring' order by rating desc;
+```
+
+## 超过五名学生的课
+```sql
+select class from courses group by class having count(distinct student) >= 5;
+```
+
+## 删除重复的电子邮箱
+```sql
+delete p1 from Person p1, Person p2 where p1.Email = p2.Email and p1.Id > p2.Id
 ```

@@ -239,6 +239,11 @@ int * const p3;
 
 ## new和malloc的区别
 > CSDN/[new和malloc的区别](https://www.cnblogs.com/QG-whz/p/5140930.html#_label1_0)
+1. new和delete可以调用构造和析构函数
+2. new不需要显示指定申请内存大小，而malloc需要
+3. malloc返回无类型指针，需要强制转换，而new返回对象类型指针
+4. 申请失败，new会抛出异常，而malloc不会
+5. new，delete可以被重载，而malloc不可以
 
 ## 引用和指针的区别
 1. 引用不可以为空但指针可以为空
