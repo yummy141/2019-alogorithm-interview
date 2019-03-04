@@ -10,5 +10,8 @@
 
 
 # Reference
-- Github/[算法/深度学习/NLP面试笔记](https://github.com/imhuay/Algorithm_Interview_Notes-Chinese)  
+- Github/[算法/深度学习/NLP面试笔记](https://github.com/imhuay/Algorithm_Interview_Notes-Chinese) @imhuay
+imhuay
+- Github/[后台开发核心知识](https://github.com/linw7/Skill-Tree) @linw7
+- Github/后端/[技术面试必备基础知识](https://github.com/CyC2018/CS-Notes) @CyC2018
 - Github/[Hands-on-Machine-Learning](https://github.com/DeqianBai/Hands-on-Machine-Learning)
