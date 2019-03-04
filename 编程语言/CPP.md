@@ -9,6 +9,7 @@
     - [虚函数（virtual）](#虚函数virtual)
     - [纯虚函数(pure virtual)](#纯虚函数pure-virtual)
     - [什么是动态联编](#什么是动态联编)
+    - [多重继承](#多重继承)
 - [static的作用](#static的作用)
     - [为什么要有静态成员函数？](#为什么要有静态成员函数)
 - [explicit的作用](#explicit的作用)
@@ -89,6 +90,10 @@ class sub : public base {
     virtual void f1() {}
 }
 ```
+### 多重继承
+> CSDN/[C++多态虚函数表详解(多重继承、多继承情况)](https://blog.csdn.net/qq_36359022/article/details/81870219)  
+多重继承下一个类可以由多个虚函数表
+
 
 ## static的作用
 1. 修饰普通变量，修改变量的存储区域和生命周期，使变量存储在静态区，在 main 函数运行前就分配了空间，如果有初始值就用初始值初始化它，如果没有初始值系统用默认值初始化它。
