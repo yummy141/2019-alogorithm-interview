@@ -27,6 +27,7 @@
 - [智能指针](#智能指针)
 - [new和malloc的区别](#new和malloc的区别)
 - [引用和指针的区别](#引用和指针的区别)
+- [单例模式](#单例模式)
 
 <!-- /TOC -->
 
@@ -255,3 +256,7 @@ int * const p3;
 2. 引用不可以改变指向，指针可以
 3. 引用的大小是所指变量的大小，而指针是指针本身大小
 4. 引用比指针更安全
+
+## 单例模式
+> CSDN/[单例模式](https://www.cnblogs.com/dupengcheng/p/7205527.html?tdsourcetag=s_pctim_aiomsg)  
+类只有一个instance的模式
