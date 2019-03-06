@@ -259,4 +259,32 @@ int * const p3;
 
 ## 单例模式
 > CSDN/[单例模式](https://www.cnblogs.com/dupengcheng/p/7205527.html?tdsourcetag=s_pctim_aiomsg)  
+
 类只有一个instance的模式
+```c++
+// 示例
+template<typename T>
+class CSingleton
+{
+private:
+    CSingleton()
+    {
+    }
+    static CSingleton *p;
+public:
+    static CSingleton* getInstance()
+    {
+        // static CSingleton *p = new CSingleton();
+        return p;
+    }
+};
+template<typename T>
+CSingleton<T>* CSingleton<T>::p = new CSingleton<T>(); 
+
+int main() 
+{ 
+
+   auto t = CSingleton<int>::getInstance();
+	return 0; 
+} 
+```
