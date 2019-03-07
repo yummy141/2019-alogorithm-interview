@@ -93,6 +93,7 @@ class sub : public base {
 ```
 ### 多重继承
 > CSDN/[C++多态虚函数表详解(多重继承、多继承情况)](https://blog.csdn.net/qq_36359022/article/details/81870219)  
+
 多重继承下一个类可以由多个虚函数表
 
 
