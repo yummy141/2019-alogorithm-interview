@@ -44,3 +44,8 @@ tensorboard --logdir=/path/to/log-directory --host=localhost
 > [csdn](https://blog.csdn.net/yc461515457/article/details/50907393)
 
 clang++ precal.cpp -o precal.exe -Wall -g -Og -static-libgcc -fcolor-diagnostics --target=x86_64-w64-mingw -std=c++17
+
+## Makefile
+- `$@`代表目标文件
+- `$^`代表所有的依赖文件
+- `$<`代表第一个依赖文件
