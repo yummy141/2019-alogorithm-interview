@@ -57,3 +57,7 @@ __C = edict()
 __C.seed = 0
 ```
 
+## print
+```Python
+print(f'Score: {score:0.3f}')
+```
