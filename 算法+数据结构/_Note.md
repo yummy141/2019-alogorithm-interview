@@ -28,6 +28,45 @@ A3: 双指针
 
 
 ## 堆的应用
+```c++
+void adjust(vector<int>& nums, const int n, int index){
+    // int n = nums.size();
+    if(index >= n)
+        return;
+    int l = 2 * index + 1;
+    int r = 2 * index + 2;
+    int max_index = index;
+    if(l < n && nums[max_index] < nums[l])
+        max_index = l;
+    if(r < n && nums[max_index] < nums[r])
+        max_index = r;
+
+    if(max_index != index){
+        swap(nums[index], nums[max_index]);
+        adjust(nums, n, max_index);
+    }
+}
+
+void heapSort(vector<int>& nums){
+    int n = nums.size();
+    // build
+    for(int i = n  / 2 - 1; i >= 0; i--)
+        adjust(nums, n, i);
+
+    for(int i = n - 1; i > 0; i--){
+        swap(nums[0], nums[i]);
+        adjust(nums, i, 0);
+    }
+}
+
+int main() {
+    vector<int> t = {9, 1, 5, 7, 3, 2};
+    heapSort(t);
+    for(auto i : t)
+        cout << i << " ";
+}
+```
+
 - 建堆时间复杂度O(N)
 - 堆删除和插入的时间复杂度都是O(logN)
 - 可以用来合并有序小文件
@@ -36,3 +75,39 @@ A3: 双指针
   - 不用每隔1s轮询任务列表
 - Top K
 - 求中位数
+
+## 快速排序
+```c++
+int partition(vector<int>& nums, int l, int r){
+    int index = rand() % (r - l + 1) + l;
+    int pivot = nums[index];
+    swap(nums[r], nums[index]);
+    int i = l;
+    for(int j = l; j < r; j++){
+        if(nums[j] < pivot)
+            swap(nums[i++], nums[j]);
+    }
+    swap(nums[r], nums[i]);
+    return i;
+}
+
+void quicksort(vector<int>& nums, int l, int r){
+    if(l >= r)
+        return;
+
+    int k = partition(nums, l, r);
+    if(k > l)
+        quicksort(nums, l, k - 1);
+    if(k < r)
+        quicksort(nums, k + 1, r);
+
+}
+
+int main() {
+    vector<int> t = {9, 1, 5, 7, 3, 2};
+    int n = t.size();
+    quicksort(t, 0, n - 1);
+    for(auto i : t)
+        cout << i << " ";
+}
+```

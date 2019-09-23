@@ -2,6 +2,7 @@
 ---
 <!-- TOC -->
 
+- [C++和C相比最大的特点](#c和c相比最大的特点)
 - [初始化列表和构造函数有什么区别](#初始化列表和构造函数有什么区别)
 - [c++中的多态](#c中的多态)
     - [编译时多态](#编译时多态)
@@ -31,8 +32,17 @@
 - [size_t 和 ssize_t](#size_t-和-ssize_t)
 - [(*fp)()，如果fp是函数指针，那么这个语句将调用对应的函数](#fp如果fp是函数指针那么这个语句将调用对应的函数)
 - [C++11 标准引入了一个新特性："=delete"函数。程序员只需在函数声明后上“=delete;”，就可将该函数禁用](#c11-标准引入了一个新特性delete函数程序员只需在函数声明后上delete就可将该函数禁用)
+- [锁](#锁)
 
 <!-- /TOC -->
+面试C++程序员的时候一般都是3板斧，先是基础问答，然后一顿虚函数、虚函数表、纯虚函数、抽象类、虚函数和析构函数、虚函数和构造函数。接着拷贝构造函数、操作符重载、下面是STL，最后是智能指针。
+## C++和C相比最大的特点
+1）面向对象：封装，继承，多态。
+2）引入引用代替指针。
+3）const /inline/template替代宏常量。
+4）namespace解决重名的问题。
+5）STL提供高效的数据结构和算法
+
 
 ## 初始化列表和构造函数有什么区别
 > CSDN/[初始化列表和构造函数有什么区别](https://blog.csdn.net/theprinceofelf/article/details/20057359)
@@ -62,6 +72,8 @@ public:
 ```
 3. 普通成员变量，需要复杂运算的初始化变量，应该在构造函数内初始化，否则尽量在初始化列表中初始化。
 
+
+
 ## c++中的多态
 ### 编译时多态
 - 运算符重载和重载函数
@@ -72,12 +84,30 @@ public:
 - 动态类型是变量或表达式在内存中的对象类型，只有运行时才能确定
 > 注意：通过对象进行调用的虚或非虚函数都在编译时绑定，对象的静态或动态类型永远是一致的。  
 > 注意：能使用哪些成员函数仍然是由静态类型决定的
+
 ### 虚函数（virtual）
+> [csdn](https://blog.csdn.net/worldwindjp/article/details/18909079)
 - 基类希望派生类进行覆盖的函数称为虚函数
 - 通过virtual使得该函数在运行时执行动态绑定
+父类类型的指针指向子类的实例，执行的时候会执行之类中定义的函数
+
+构造函数可以是虚函数吗？
+     答案：不能，每个对象的虚函数表指针是在构造函数中初始化的，因为构造函数没执行完，所以虚函数表指针还没初始化好，构造函数的虚函数不起作用。
+
+析构函数可以是虚函数吗？
+     答案： 可以，如果有子类的话，析构函数必须是虚函数。否则析构子类类型的指针时，析构函数有可能不会被调用到。
+     编译器总是根据类型来调用类成员函数。但是一个派生类的指针可以安全地转化为一个基类的指针。这样删除一个基类的指针的时候，C++不管这个指针指向一个基类对象还是一个派生类的对象，调用的都是基类的析构函数而不是派生类的。如果你依赖于派生类的析构函数的代码来释放资源，而没有重载析构函数，那么会有资源泄漏。
+
+虚函数表是针对类还是针对对象的?
+     答案：虚函数表是针对类的，一个类的所有对象的虚函数表都一样。
+
+虚继承和虚基类？
+     答案：虚继承是为了解决多重继承出现菱形继承时出现的问题。例如：类B、C分别继承了类A。类D多重继承类B和C的时候，类A中的数据就会在类D中存在多份。通过声明继承关系的时候加上virtual关键字可以实现虚继承。
+
 ### 纯虚函数(pure virtual)
 - 接口，定义可以用=0
 - 含有纯虚函数的类是抽象基类，不能直接创建一个抽象基类的对象。
+
 ### 什么是动态联编
 在C++中由于虚函数导致的多态性，一个类函数的调用并不是在编译时刻被确定的（编写代码的时候并不能确定被调用的是基类的函数还是哪个派生类的函数，所以被成为“虚”函数），也就导致了静态联编不知道该把函数调用与哪一个子类对象的函数功能实现绑定一起，而是在运行时刻根据具体调用函数的对象类型来确定。
 c++中每个类都会维护一个虚函数表，如果子类中重写了某个虚函数，则表中相应的指针会被替代。
@@ -167,6 +197,9 @@ size_t是unsigned int的别名
 > CSDN/[capacity 和 size的区别](https://bbs.csdn.net/topics/390343778)
 
 size是真实大小，capacity是预申请的内存。
+capacity是容量，是可存放字符的个数。
+size是大小，是当前已存放字符的个数。
+capacity >= size， 具体capcacity大多少，具体的stl库实现决定。
 
 ## vector的emplace_back和push_back
 emplace_back优势主要在传递类或者结构体之类会比较高效（C++11）
@@ -188,6 +221,16 @@ emplace_back优势主要在传递类或者结构体之类会比较高效（C++11
 4、文字常量区 —常量字符串就是放在这里的。 程序结束后由系统释放。
 
 5、程序代码区—存放函数体的二进制代码。
+
+
+区别和联系：
+1.申请方式    
+堆是由程序员自己申请并指明大小，在c中malloc函数 如p1 = (char *)malloc(10);    栈由系统自动分配，如声明在函数中一个局部变量 int b; 系统自动在栈中为b开辟空间
+2.申请后系统的响应    
+栈：只要栈的剩余空间大于所申请空间，系统将为程序提供内存，否则将报异常提示栈溢出。   
+堆：首先应该知道操作系统有一个记录空闲内存地址的链表，当系统收到程序的申请时，会 遍历该链表，寻找第一个空间大于所申请空间的堆结点，然后将该结点从空闲结点链表中删除，并将该结点的空间分配给程序，另外，对于大多数系统，会在这块内 存空间中的首地址处记录本次分配的大小，这样，代码中的delete语句才能正确的释放本内存空间。另外，由于找到的堆结点的大小不一定正好等于申请的大 小，系统会自动的将多余的那部分重新放入空闲链表中。
+3.申请大小的限制    栈：在Windows下,栈是向低地址扩展的数据结 构，是一块连续的内存的区域。这句话的意思是栈顶的地址和栈的最大容量是系统预先规定好的，在WINDOWS下，栈的大小是2M（也有的说是1M，总之是 一个编译时就确定的常数），如果申请的空间超过栈的剩余空间时，将提示overflow。因此，能从栈获得的空间较小。    堆：堆是向高地址扩展的数据结构，是不连续的内存区域。这是由于系统是用链表来存储的空闲内存地址的，自然是不连续的，而链表的遍历方向是由低地址向高地址。堆的大小受限于计算机系统中有效的虚拟内存。由此可见，堆获得的空间比较灵活，也比较大。
+4.申请效率的比较：    栈由系统自动分配，速度较快。但程序员是无法控制的。 堆是由new分配的内存，一般速度比较慢，而且容易产生内存碎片,不过用起来最方便
 
 
 ## 文件流
@@ -232,6 +275,7 @@ int * const p3;
 在最后一种情况下，指针是只读的，也就是 p3 本身的值不能被修改；在前面两种情况下，指针所指向的数据是只读的，也就是 p1、p2 本身的值可以修改（指向不同的数据），但它们指向的数据不能被修改。
 
 ## 智能指针
+> [csdn](https://blog.csdn.net/worldwindjp/article/details/18843087)
 1. 从较浅的层面看，智能指针是利用了一种叫做RAII（资源获取即初始化）的技术对普通的指针进行封装，这使得智能指针实质是一个对象，行为表现的却像一个指针。
 2. 智能指针的作用是防止忘记调用delete释放内存和程序异常的进入catch块忘记释放内存。另外指针的释放时机也是非常有考究的，多次释放同一个指针会造成程序崩溃，这些都可以通过智能指针来解决。
 3. 智能指针还有一个作用是把值语义转换成引用语义。C++和Java有一处最大的区别在于语义不同，在Java里面下列代码：
@@ -246,6 +290,80 @@ int * const p3;
      Animal b = a;
 
      这里却是就是生成了两个对象。
+
+shared_ptr实现
+```c++
+template<typename T>
+class SharedPtr{
+private:
+    T *ptr;
+    int *use_count;
+public:
+
+    SharedPtr(const SharedPtr<T> &orig): ptr(orig.ptr), use_count( &(++*orig.use_count) ){
+        cout << "copyt constructtor : " << *ptr << " refCount = " << *use_count << endl;
+    }
+
+    SharedPtr(T *p): ptr(p), use_count(new int(1)) {
+        cout << "create object : " << *ptr << " refCount = " << *use_count << endl;
+    }
+
+    SharedPtr<T>& operator=(const SharedPtr<T> &rhs){
+        if(&rhs != this){
+            ++*rhs.use_count;
+            if(--*use_count==0){
+                cout << "in function operator = . delete" << *ptr << endl;
+                delete ptr;
+                delete use_count;
+            }
+
+            ptr = rhs.ptr;
+            use_count = rhs.use_count;
+            cout << "in function operator = ." << *ptr <<" refCount = " << *use_count << endl;
+            return *this;
+        }
+        return *this;
+    }
+
+    T operator*(){
+        if(use_count == 0)
+            return nullptr;
+        
+        return *ptr;
+    }
+
+    T* operator->(){
+        if(use_count == 0)
+            return nullptr;
+        return ptr;
+    }
+
+    ~SharedPtr(){
+        if(ptr && --*use_count == 0){
+            cout << *ptr << " refCount = 0. delete the ptr" << endl;
+            delete ptr;
+            delete use_count;
+        }
+    }
+
+    int getCount()
+    {
+        return *use_count;
+    }
+
+};
+
+
+int main(){
+    SharedPtr<string> pstr(new string(" first object "));
+    SharedPtr<string> pstr2(pstr);
+    SharedPtr<string> pstr3(new string(" second object "));
+    //  SharedPtr<string> pstr4;
+
+    // pstr4 = pstr2;
+    return 0;
+}
+```
 
 ## new和malloc的区别
 > CSDN/[new和malloc的区别](https://www.cnblogs.com/QG-whz/p/5140930.html#_label1_0)
@@ -301,3 +419,6 @@ ssize_t是有符号整型，在32位机器上等同与int，在64位机器上等
 > CSDN/[详解C/C++函数指针声明 ( *( void(*)())0)();](http://www.cnblogs.com/yaowen/p/4797354.html)
 
 ## C++11 标准引入了一个新特性："=delete"函数。程序员只需在函数声明后上“=delete;”，就可将该函数禁用
+
+## 锁
+[csdn](https://www.nowcoder.com/questionTerminal/554355eea5aa44d697a3a4bc99795207?page=7&onlyReference=false)

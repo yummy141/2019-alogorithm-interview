@@ -51,5 +51,5 @@ clang++ precal.cpp -o precal.exe -Wall -g -Og -static-libgcc -fcolor-diagnostics
 - `$<`代表第一个依赖文件
 
 ## visual studio
-> 批量注释: Ctrl+K,Ctrl+C   
-> 取消注释: Ctrl+K,Ctrl+U
+- 批量注释: Ctrl+K,Ctrl+C   
+- 取消注释: Ctrl+K,Ctrl+U
